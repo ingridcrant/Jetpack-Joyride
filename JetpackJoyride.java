@@ -4,11 +4,8 @@ Ingrid and Isabel Crant
 */
 
 import javax.swing.*;
-import java.util.Random;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.awt.geom.*;
 import java.io.File;
 import java.io.*;
 import javax.imageio.*;
@@ -45,27 +42,33 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
     public static final int WIDTH=1000, HEIGHT=750;
     private static final Image background = new ImageIcon("images/background.png").getImage();
 	private static int backgroundX = 0, backgroundY = 0, reversebackgroundX = 1000, reversebackgroundY = 0;
-
+	private static boolean[] allKeys;
+	
+	private Barry barry;
+	private int barryRunningPos = 1;
 
 	public JetpackJoyridePanel(){
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		addMouseListener(this);
 		addKeyListener(this);
 
+		allKeys = new boolean[KeyEvent.KEY_LAST+1];
+		barry = new Barry("barry");
+
 		Timer myTimer = new Timer(100, this);
 		setFocusable(true);
 		requestFocus();
 		myTimer.start();
  	}
-	public static BufferedImage loadBuffImg(String n) { 													// used to load BufferedImages
-        try {
-            return ImageIO.read(new File("Images/" + n));
-        }
-        catch (IOException e) {
-            System.out.println(e);
-        }
-        return null;
-    }
+	// public static BufferedImage loadBuffImg(String n) { 													// used to load BufferedImages
+    //     try {
+    //         return ImageIO.read(new File("Images/" + n));
+    //     }
+    //     catch (IOException e) {
+    //         System.out.println(e);
+    //     }
+    //     return null;
+    // }
 
  	// Main Game Loop
 	@Override
@@ -75,14 +78,18 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	}
 	
     public void move(){
+		backgroundX -= 10;
+		reversebackgroundX -= 10;
 		if(backgroundX <= -1000) backgroundX = 1000;
 		if(reversebackgroundX <= -1000) reversebackgroundX = 1000;
+		barry.move(allKeys[KeyEvent.VK_SPACE]);
     }
     
 	@Override
     public void paint(Graphics g) {
 		g.drawImage(background, backgroundX, backgroundY, null);
 		g.drawImage(background, reversebackgroundX+WIDTH, reversebackgroundY, -WIDTH, HEIGHT, null);
+		barry.draw(g);
 	}
 
 	@Override
@@ -95,12 +102,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	public void	mouseReleased(MouseEvent e){}
 	
 	public void	keyPressed(KeyEvent e){
-		if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			backgroundX -= 10;
-			reversebackgroundX -= 10;
-		}
+		allKeys[e.getKeyCode()] = true;
 	}
 	public void	keyReleased(KeyEvent e){
+		allKeys[e.getKeyCode()] = false;
 	}
 		
 	public void	keyTyped(KeyEvent e){}
