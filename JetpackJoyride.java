@@ -45,7 +45,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private static boolean[] allKeys;
 	
 	private Barry barry;
-	private int barryRunningPos = 1;
 
 	public JetpackJoyridePanel(){
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -60,15 +59,15 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		requestFocus();
 		myTimer.start();
  	}
-	// public static BufferedImage loadBuffImg(String n) { 													// used to load BufferedImages
-    //     try {
-    //         return ImageIO.read(new File("Images/" + n));
-    //     }
-    //     catch (IOException e) {
-    //         System.out.println(e);
-    //     }
-    //     return null;
-    // }
+	public static BufferedImage loadBuffImg(String n) { 													// used to load BufferedImages
+        try {
+            return ImageIO.read(new File("Images/" + n));
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+        return null;
+    }
 
  	// Main Game Loop
 	@Override
@@ -104,7 +103,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	public void	keyPressed(KeyEvent e){
 		allKeys[e.getKeyCode()] = true;
 	}
-	public void	keyReleased(KeyEvent e){
+	public void	keyReleased(KeyEvent e){ 
 		allKeys[e.getKeyCode()] = false;
 	}
 		
