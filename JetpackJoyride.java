@@ -43,8 +43,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
     private static final Image background = new ImageIcon("images/background.png").getImage();
 	private static int backgroundX = 0, backgroundY = 0, reversebackgroundX = 1000, reversebackgroundY = 0;
 	private static boolean[] allKeys;
-	
+
 	private Barry barry;
+	private Coin coin1;
 
 	public JetpackJoyridePanel(){
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -53,6 +54,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		allKeys = new boolean[KeyEvent.KEY_LAST+1];
 		barry = new Barry("barry");
+		coin1 = new Coin();
 
 		Timer myTimer = new Timer(100, this);
 		setFocusable(true);
@@ -68,7 +70,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
         }
         return null;
     }
-
  	// Main Game Loop
 	@Override
 	public void actionPerformed(ActionEvent e){
@@ -81,13 +82,21 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		reversebackgroundX -= 10;
 		if(backgroundX <= -1000) backgroundX = 1000;
 		if(reversebackgroundX <= -1000) reversebackgroundX = 1000;
+
+		coin1.move();
 		barry.move(allKeys[KeyEvent.VK_SPACE]);
+
+		if(barry.intersects(coin1)) {
+			System.out.println("got coin!");
+		}
     }
     
 	@Override
     public void paint(Graphics g) {
 		g.drawImage(background, backgroundX, backgroundY, null);
 		g.drawImage(background, reversebackgroundX+WIDTH, reversebackgroundY, -WIDTH, HEIGHT, null);
+
+		coin1.draw(g);
 		barry.draw(g);
 	}
 
