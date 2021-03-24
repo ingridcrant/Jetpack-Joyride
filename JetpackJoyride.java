@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.*;
 import javax.imageio.*;
 import java.awt.image.*;
+import java.util.ArrayList;
 
 public class JetpackJoyride extends JFrame{
 	/**
@@ -45,7 +46,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private static boolean[] allKeys;
 
 	private Barry barry;
-	private Coin coin1;
+	private ArrayList<Coin> coins = new ArrayList<Coin>(), removedCoins = new ArrayList<Coin>();
 
 	public JetpackJoyridePanel(){
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -54,7 +55,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		allKeys = new boolean[KeyEvent.KEY_LAST+1];
 		barry = new Barry("barry");
-		coin1 = new Coin();
+
+		for(int x = 300; x < 700; x += 100) {
+			coins.add(new Coin(x, 300));
+		}
 
 		Timer myTimer = new Timer(100, this);
 		setFocusable(true);
@@ -83,12 +87,21 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		if(backgroundX <= -1000) backgroundX = 1000;
 		if(reversebackgroundX <= -1000) reversebackgroundX = 1000;
 
-		coin1.move();
+		for(Coin coin: coins) {
+			coin.move();
+		}
+
 		barry.move(allKeys[KeyEvent.VK_SPACE]);
 
-		if(barry.intersects(coin1)) {
-			System.out.println("got coin!");
+		for(Coin coin: coins){
+			if(barry.intersects(coin)) {
+				removedCoins.add(coin);
+				System.out.println("got coin!");
+			}
 		}
+
+		coins.removeAll(removedCoins);
+		removedCoins.clear();
     }
     
 	@Override
@@ -96,7 +109,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		g.drawImage(background, backgroundX, backgroundY, null);
 		g.drawImage(background, reversebackgroundX+WIDTH, reversebackgroundY, -WIDTH, HEIGHT, null);
 
-		coin1.draw(g);
+		for(Coin coin: coins){
+			coin.draw(g);
+		}
 		barry.draw(g);
 	}
 

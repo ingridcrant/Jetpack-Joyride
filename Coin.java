@@ -8,16 +8,15 @@ import java.awt.image.*;
 
 public class Coin extends Rectangle {
     private static BufferedImage coinSpriteImage = JetpackJoyridePanel.loadBuffImg("coinsprite.png");
-	private static BufferedImage[] sprites;
-    private static int currentSprite, X, Y;
-    private static final int NUMSPRITES = 6;
+	private static final int NUMSPRITES = 6;
+    private static BufferedImage[] sprites = getSprites(coinSpriteImage, NUMSPRITES);;
+    
+    private int currentSprite, X, Y;
 
-    public Coin() {
+    public Coin(int X, int Y) {
         super();
-        X = 500;
-        Y = 300;
-
-        sprites = getSprites(coinSpriteImage, NUMSPRITES);
+        this.X = X;
+        this.Y = Y;
         currentSprite = 0;
 
         setBounds(X, Y, sprites[0].getWidth(), sprites[0].getHeight());
