@@ -1,72 +1,72 @@
 import java.awt.*;
-import java.awt.image.*;
+import javax.swing.*;
 
-public class Scientist {
+public class Scientist extends Rectangle {
+
+    private static final Image scientistWalking1 = new ImageIcon("images/scientist-stationary.png").getImage();
+    private static final Image scientistWalking2 = new ImageIcon("images/scientist-moving.png").getImage();
+    private static final Image scientistCrouching = new ImageIcon("images/scientist-crouching.png").getImage();
+    private static final Image scientistFainting = new ImageIcon("images/scientist-fainting.png").getImage();
+
     private int x, y;
-    private int width, height;
+    private int width;
 
-    private BufferedImage pic;
-    private Rectangle scientistBox;
+    private boolean walking, crouching, fainting;
+    private static int maxWalkingPoseCount = 4;
+    private int walkingPoseCount = 0;
 
-    public Scientist(int xx, String picName) {
+    public Scientist() {
+        walking = true;
+        crouching = false;
+        fainting = false;
 
-        pic = JetpackJoyridePanel.loadBuffImg(picName); // we need scientists to face different directions (currently only have facing left, I sugest we do the reflect thing like we did for the background)
+        width = scientistWalking1.getWidth(null);
+        height = scientistWalking1.getHeight(null);
 
-        width = pic.getWidth(null);
-        height = pic.getHeight(null);
-
-        x = xx;
-        y = JetpackJoyridePanel.WIDTH - width - 20;
-
-        scientistBox = new Rectangle(x, y, width, height);
+        x = JetpackJoyridePanel.WIDTH;
+        y = JetpackJoyridePanel.HEIGHT - width - 21;
     }
 
-    public static void move(String dir) {
-        if(dir.equals("right")) {
-            pic = JetpackJoyridePanel.loadBuffImg("Images/scientist-moving.png"); // but make it face right
-        }
-        else {
-            pic = JetpackJoyridePanel.loadBuffImg("Images/scientist-moving.png");
-        }
+    public void move() {
+        x -= 10;
     }
 
-    // if scientist is hit by bullets flying out of Barry's Jetpack
-    public static void hitByBullets() {
-        for(Bullet bullet : SpaceInvadersPanel.bullets) {
-            if(getRect().intersects(bullet.getRect())) {
-
-            }
+    // if Barry is approaching the scientist
+    public void barryApproaching() {
+        if(JetpackJoyridePanel.barry.getY() > y - JetpackJoyridePanel.barry.getHeight() && fainting == false) { // if Barry is on the same plane as the scientist and the scientist has not already fainted
+            walking = false;
+            crouching = true; // makes scientist crouch
+            fainting = false;
         }
     }
 
     // if scientist is hit by Barry
-    public static void hitByBarry() {
-        if(getRect().intersects(SpaceInvadersPanel.barry.getRect())) {
-
+    public void hitByBarry() {
+        if(this.intersects(JetpackJoyridePanel.barry)) {
+            walking = false;
+            crouching = false;
+            fainting = true; // makes scientist faint
         }
     }
 
-    // if scientist walks into a zapper
-    public static void hitByZapper() {
-        for(Zapper zapper : SpaceInvadersPanel.zappers) {
-            if(getRect().intersects(zapper.getRect())) {
-
+    public void draw(Graphics g) {
+        if(walking) {
+            walkingPoseCount++;
+            if(walkingPoseCount > maxWalkingPoseCount/2) {
+                g.drawImage(scientistWalking1, x, y, null);
+            }
+            else {
+                g.drawImage(scientistWalking2, x, y, null);
+            }
+            if(walkingPoseCount > maxWalkingPoseCount) {
+                walkingPoseCount = 0;
             }
         }
-    }
-
-    // Getter methods:
-    public int getX() {
-        return x;
-    }
-    public int getY() {
-        return y;
-    }
-    public Rectangle getRect() {
-        return scientistBox;
-    }
-
-    public static void draw(Graphics g) {
-        g.drawImage(pic, x, y, null);
+        else if(crouching) {
+            g.drawImage(scientistCrouching, x, y, null);
+        }
+        else if(fainting) {
+            g.drawImage(scientistFainting, x, y, null);
+        }
     }
 }
