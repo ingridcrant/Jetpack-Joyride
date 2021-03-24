@@ -18,7 +18,7 @@ public class Coin extends Rectangle {
         Y = 300;
 
         sprites = getSprites(coinSpriteImage, NUMSPRITES);
-        currentSprite = -1;
+        currentSprite = 0;
 
         setBounds(X, Y, sprites[0].getWidth(), sprites[0].getHeight());
     }
