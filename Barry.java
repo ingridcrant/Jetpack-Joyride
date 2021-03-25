@@ -70,17 +70,21 @@ public class Barry extends Rectangle {
         if(WALKING) {
             walkingPoseCount++;
             if(walkingPoseCount > maxWalkingPoseCount/2) {
+                setBounds(X, Y, barryWalking1.getWidth(null), barryWalking1.getHeight(null));
                 g.drawImage(barryWalking1, X, Y, null);
             }
             else {
+                setBounds(X, Y, barryWalking2.getWidth(null), barryWalking2.getHeight(null));
                 g.drawImage(barryWalking2, X, Y, null);
             }
             if(walkingPoseCount > maxWalkingPoseCount) {
                 walkingPoseCount = 0;
             }
         } else if (RISING) {
+            setBounds(X, Y, barryRising.getWidth(null), barryWalking2.getHeight(null));
             g.drawImage(barryRising, X, Y, null);
         } else if (FALLING) {
+            setBounds(X, Y, barryFalling.getWidth(null), barryWalking2.getHeight(null));
             g.drawImage(barryFalling, X, Y, null);
         }
     }

@@ -26,11 +26,6 @@ public class Zapper {
         if (barry.intersects(bounds)) {
             // Calculate the collision overlay
             Rectangle intersectBounds = getCollision(bounds, barry);
-            System.out.println("Area: "+intersectBounds);
-            
-            System.out.println("intersect: "+intersectBounds);
-            System.out.println("Barry: "+barry);
-            System.out.println("Zapper: "+bounds);
 
             if (!intersectBounds.isEmpty()) {
                 // Check all the pixels in the collision overlay to determine
