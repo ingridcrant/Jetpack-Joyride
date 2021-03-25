@@ -58,7 +58,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		allKeys = new boolean[KeyEvent.KEY_LAST+1];
 		barry = new Barry("barry");
-		coin1 = new Coin(400, 200);
+		coin1 = new Coin();
 		scientists = new ArrayList<Scientist>();
 
 		Timer myTimer = new Timer(100, this);
@@ -101,7 +101,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		scientists.removeAll(removedScientists);
 	}
-	
+
 	public static BufferedImage flipImage(BufferedImage pic) {
 		BufferedImage reversedPic = new BufferedImage(pic.getWidth(), pic.getHeight(), BufferedImage.TYPE_INT_ARGB);
         for(int xx = pic.getWidth()-1; xx > 0; xx--){
