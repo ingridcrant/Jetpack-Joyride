@@ -14,12 +14,10 @@ public class Coin extends Rectangle {
     private int currentSprite, X, Y;
 
     public Coin(int X, int Y) {
-        super();
+        super(X, Y, sprites[0].getWidth(), sprites[0].getHeight());
         this.X = X;
         this.Y = Y;
         currentSprite = 0;
-
-        setBounds(X, Y, sprites[0].getWidth(), sprites[0].getHeight());
     }
     private static BufferedImage[] getSprites(BufferedImage spriteSheet, int numSprites) {
         BufferedImage[] sprites = new BufferedImage[numSprites];

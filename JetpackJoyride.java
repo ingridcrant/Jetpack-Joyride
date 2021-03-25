@@ -56,7 +56,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		allKeys = new boolean[KeyEvent.KEY_LAST+1];
 		barry = new Barry("barry");
-		coin1 = new Coin();
+		coin1 = new Coin(400, 200);
 		scientists = new ArrayList<Scientist>();
 
 		Timer myTimer = new Timer(100, this);
