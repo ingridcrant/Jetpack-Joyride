@@ -11,6 +11,7 @@ import java.io.*;
 import javax.imageio.*;
 import java.awt.image.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class JetpackJoyride extends JFrame{
 	/**
@@ -44,6 +45,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
     private static final Image background = new ImageIcon("images/background.png").getImage();
 	private static int backgroundX = 0, backgroundY = 0, reversebackgroundX = 1000, reversebackgroundY = 0;
 	private static boolean[] allKeys;
+	private Random rand = new Random();
 
 	public static Barry barry;
 	private Coin coin1;
@@ -84,7 +86,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	public void addScientists() {
 		if(scientists.isEmpty()) {
-			scientists.add(new Scientist());
+			int randDir = rand.nextInt(2);
+			scientists.add(new Scientist(randDir));
 		}
 	}
 	public void removeScientists() {
@@ -97,6 +100,16 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 
 		scientists.removeAll(removedScientists);
+	}
+	
+	public static BufferedImage flipImage(BufferedImage pic) {
+		BufferedImage reversedPic = new BufferedImage(pic.getWidth(), pic.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        for(int xx = pic.getWidth()-1; xx > 0; xx--){
+            for(int yy = 0; yy < pic.getHeight(); yy++){
+                reversedPic.setRGB(pic.getWidth()-xx, yy, pic.getRGB(xx, yy));
+            }
+        }
+    	return reversedPic;
 	}
 	
     public void move(){
