@@ -1,16 +1,11 @@
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.io.*;
-import javax.imageio.*;
 import java.awt.image.*;
 
 public class Barry extends Rectangle {
-    private static final Image barryWalking1 = new ImageIcon("images/barry.png").getImage();
-    private static final Image barryWalking2 = new ImageIcon("images/barry2.png").getImage();
-    private static final Image barryRising = new ImageIcon("images/barry_rising.png").getImage();
-    private static final Image barryFalling = new ImageIcon("images/barry_falling.png").getImage();
+    private static final BufferedImage barryWalking1 = JetpackJoyridePanel.loadBuffImg("barry.png");
+    private static final BufferedImage barryWalking2 = JetpackJoyridePanel.loadBuffImg("barry2.png");
+    private static final BufferedImage barryRising = JetpackJoyridePanel.loadBuffImg("barry_rising.png");
+    private static final BufferedImage barryFalling = JetpackJoyridePanel.loadBuffImg("barry_falling.png");
 
     private boolean RISING, FALLING, WALKING;
     private static int maxWalkingPoseCount = 4;
@@ -55,6 +50,22 @@ public class Barry extends Rectangle {
             RISING = false; FALLING = false; WALKING = true;
         }
     }
+
+    public BufferedImage getImage() {
+        if(WALKING) {
+            if(walkingPoseCount > maxWalkingPoseCount/2) {
+                return barryWalking1;
+            }
+            else {
+                return barryWalking2;
+            }
+        } else if (RISING) {
+            return barryRising;
+        } else {
+            return barryFalling;
+        }
+    }
+
     public void draw(Graphics g) {
         if(WALKING) {
             walkingPoseCount++;

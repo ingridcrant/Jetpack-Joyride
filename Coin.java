@@ -1,9 +1,4 @@
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.io.*;
-import javax.imageio.*;
 import java.awt.image.*;
 
 public class Coin extends Rectangle {

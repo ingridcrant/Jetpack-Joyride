@@ -44,11 +44,14 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
     public static final int WIDTH=1000, HEIGHT=750;
     private static final Image background = new ImageIcon("images/background.png").getImage();
 	private static int backgroundX = 0, backgroundY = 0, reversebackgroundX = 1000, reversebackgroundY = 0;
+	public static final int dx = 10;
+	
 	private static boolean[] allKeys;
 	private Random rand = new Random();
 
 	public static Barry barry;
 	private Coin coin1;
+	private Zapper zapper;
 	private ArrayList<Scientist> scientists;
 
 	public JetpackJoyridePanel(){
@@ -58,7 +61,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		allKeys = new boolean[KeyEvent.KEY_LAST+1];
 		barry = new Barry("barry");
-		coin1 = new Coin();
+		coin1 = new Coin(400, 200);
+		zapper = new Zapper("diagonal", 700, 200);
 		scientists = new ArrayList<Scientist>();
 
 		Timer myTimer = new Timer(100, this);
@@ -114,12 +118,13 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	}
 	
     public void move(){
-		backgroundX -= 10;
-		reversebackgroundX -= 10;
-		if(backgroundX <= -1000) backgroundX = 1000;
-		if(reversebackgroundX <= -1000) reversebackgroundX = 1000;
+		backgroundX -= dx;
+		reversebackgroundX -= dx;
+		if(backgroundX <= -WIDTH) backgroundX = WIDTH;
+		if(reversebackgroundX <= -WIDTH) reversebackgroundX = WIDTH;
 
 		coin1.move();
+		zapper.move();
 
 		addScientists();
 		for(Scientist scientist : scientists) {
@@ -134,6 +139,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		if(barry.intersects(coin1)) {
 			System.out.println("got coin!");
 		}
+		if(zapper.intersects(barry)) {
+			System.out.println("hit zapper");
+		}
     }
     
 	@Override
@@ -142,6 +150,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		g.drawImage(background, reversebackgroundX+WIDTH, reversebackgroundY, -WIDTH, HEIGHT, null);
 
 		coin1.draw(g);
+		zapper.draw(g);
 
 		for(Scientist scientist : scientists) {
 			scientist.draw(g);
