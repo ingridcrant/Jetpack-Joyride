@@ -1,25 +1,41 @@
 import java.awt.*;
-import javax.swing.*;
+import java.awt.image.*;
 
 public class Scientist extends Rectangle {
 
-    private static final Image scientistWalking1 = new ImageIcon("images/scientist-stationary.png").getImage();
-    private static final Image scientistWalking2 = new ImageIcon("images/scientist-moving.png").getImage();
-    private static final Image scientistCrouching = new ImageIcon("images/scientist-crouching.png").getImage();
-    private static final Image scientistFainting = new ImageIcon("images/scientist-fainting.png").getImage();
+    private BufferedImage scientistWalking1;
+    private BufferedImage scientistWalking2;
+    private BufferedImage scientistCrouching;
+    private BufferedImage scientistFainting;
 
     private int x, y;
+    private int dir;
     private int width, height;
 
     private boolean walking, crouching, fainting;
     private static int maxWalkingPoseCount = 4;
     private int walkingPoseCount = 0;
 
-    public Scientist() {
+    public Scientist(int ddir) {
         super();
         walking = true;
         crouching = false;
         fainting = false;
+
+        dir = ddir;
+
+        if(dir == 0) {
+            scientistWalking1 = JetpackJoyridePanel.loadBuffImg("scientist-stationary.png");
+            scientistWalking2 = JetpackJoyridePanel.loadBuffImg("scientist-moving.png");
+            scientistCrouching = JetpackJoyridePanel.loadBuffImg("scientist-crouching.png");
+            scientistFainting = JetpackJoyridePanel.loadBuffImg("scientist-fainting.png");
+        }
+        else {
+            scientistWalking1 = JetpackJoyridePanel.flipImage(JetpackJoyridePanel.loadBuffImg("scientist-stationary.png"));
+            scientistWalking2 = JetpackJoyridePanel.flipImage(JetpackJoyridePanel.loadBuffImg("scientist-moving.png"));
+            scientistCrouching = JetpackJoyridePanel.flipImage(JetpackJoyridePanel.loadBuffImg("scientist-crouching.png"));
+            scientistFainting = JetpackJoyridePanel.flipImage(JetpackJoyridePanel.loadBuffImg("scientist-fainting.png"));
+        }
 
         width = scientistWalking1.getWidth(null);
         height = scientistWalking1.getHeight(null);
@@ -31,8 +47,20 @@ public class Scientist extends Rectangle {
     }
 
     public void move() {
-        translate(-15, 0);
-        x -= 15;
+        if(walking) {
+            if(dir == 0) {
+                translate(-15, 0);
+                x -= 15;
+            }
+            else {
+                translate(-5, 0);
+                x -= 5;
+            }
+        }
+        else {
+            translate(-10, 0);
+            x -= 10;
+        }
     }
 
     // if Barry is approaching the scientist
