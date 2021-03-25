@@ -85,7 +85,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	}
 
 	public void addScientists() {
-		if(scientists.isEmpty()) {
+		boolean canSpawn = new Random().nextInt(25) == 0;
+		if(canSpawn) {
 			int randDir = rand.nextInt(2);
 			scientists.add(new Scientist(randDir));
 		}
