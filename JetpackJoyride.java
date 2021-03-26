@@ -5,6 +5,7 @@ Ingrid and Isabel Crant
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.*;
@@ -45,6 +46,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
     private static final Image background = new ImageIcon("images/background.png").getImage();
 	private static int backgroundX = 0, backgroundY = 0, reversebackgroundX = 1000, reversebackgroundY = 0;
 	public static final int dx = -20;
+
+	private static final int LEFT = 0, RIGHT = 1;
 	
 	private static boolean[] allKeys;
 	private Random rand = new Random();
@@ -136,7 +139,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
         }
     	return reversedPic;
 	}
-
 	
     public void move(){
 		backgroundX += dx;
@@ -167,11 +169,11 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				}
 			}
 			if(scientist.intersects(barry)) {
-				scientist.faint();
+				scientist.faint(RIGHT);
 			}
 			for(Missile missile : missiles) {
 				if(scientist.intersects(missile)) {
-					scientist.faint();
+					scientist.faint(missile.getDirection());
 				}
 			}
 		}

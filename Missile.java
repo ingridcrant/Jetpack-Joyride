@@ -44,6 +44,10 @@ public class Missile extends Rectangle {
         setBounds(x, y, width, height);
     }
 
+    public int getDirection() {
+        return dir;
+    }
+
     public BufferedImage getImage() {
         return missilePic;
     }

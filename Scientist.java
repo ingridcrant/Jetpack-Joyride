@@ -15,6 +15,7 @@ public class Scientist extends Rectangle {
     private int width, height;
 
     private boolean walking, crouching, fainting;
+    private boolean flipped = false;
     private static int maxWalkingPoseCount = 4;
     private int walkingPoseCount = 0;
 
@@ -69,7 +70,7 @@ public class Scientist extends Rectangle {
         fainting = false;
     }
     // if scientist is hit by Barry
-    public void faint() {
+    public void faint(int direction) {
         walking = false;
         crouching = false;
         fainting = true; // makes scientist faint
