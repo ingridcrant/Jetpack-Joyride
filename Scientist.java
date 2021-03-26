@@ -2,11 +2,12 @@ import java.awt.*;
 import java.awt.image.*;
 
 public class Scientist extends Rectangle {
+    private static final int LEFT = 0, RIGHT = 1;
 
-    private BufferedImage scientistWalking1;
-    private BufferedImage scientistWalking2;
-    private BufferedImage scientistCrouching;
-    private BufferedImage scientistFainting;
+    private BufferedImage scientistWalking1 = JetpackJoyridePanel.loadBuffImg("scientist_stationary.png");
+    private BufferedImage scientistWalking2 = JetpackJoyridePanel.loadBuffImg("scientist_moving.png");
+    private BufferedImage scientistCrouching = JetpackJoyridePanel.loadBuffImg("scientist_crouching.png");
+    private BufferedImage scientistFainting = JetpackJoyridePanel.loadBuffImg("scientist_fainting.png");;
 
     private int x, y;
     private int dir;
@@ -24,17 +25,11 @@ public class Scientist extends Rectangle {
 
         dir = ddir;
 
-        if(dir == 0) {
-            scientistWalking1 = JetpackJoyridePanel.loadBuffImg("scientist-stationary.png");
-            scientistWalking2 = JetpackJoyridePanel.loadBuffImg("scientist-moving.png");
-            scientistCrouching = JetpackJoyridePanel.loadBuffImg("scientist-crouching.png");
-            scientistFainting = JetpackJoyridePanel.loadBuffImg("scientist-fainting.png");
-        }
-        else {
-            scientistWalking1 = JetpackJoyridePanel.flipImage(JetpackJoyridePanel.loadBuffImg("scientist-stationary.png"));
-            scientistWalking2 = JetpackJoyridePanel.flipImage(JetpackJoyridePanel.loadBuffImg("scientist-moving.png"));
-            scientistCrouching = JetpackJoyridePanel.flipImage(JetpackJoyridePanel.loadBuffImg("scientist-crouching.png"));
-            scientistFainting = JetpackJoyridePanel.flipImage(JetpackJoyridePanel.loadBuffImg("scientist-fainting.png"));
+        if(dir == RIGHT) {
+            scientistWalking1 = JetpackJoyridePanel.flipImage(scientistWalking1);
+            scientistWalking2 = JetpackJoyridePanel.flipImage(scientistWalking2);
+            scientistCrouching = JetpackJoyridePanel.flipImage(scientistCrouching);
+            scientistFainting = JetpackJoyridePanel.flipImage(scientistFainting);
         }
 
         width = scientistWalking1.getWidth(null);
@@ -48,7 +43,7 @@ public class Scientist extends Rectangle {
 
     public void move() {
         if(walking) {
-            if(dir == 0) {
+            if(dir == LEFT) {
                 translate(-15, 0);
                 x -= 15;
             }

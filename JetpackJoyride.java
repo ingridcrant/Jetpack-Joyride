@@ -38,7 +38,7 @@ public class JetpackJoyride extends JFrame{
 // INTERFACE
 class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListener, KeyListener{
 	/**
-	 *
+	 * 
 	 */
     private static Timer myTimer;
     public static final int WIDTH=1000, HEIGHT=750;
@@ -53,6 +53,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private Coin coin1;
 	private Zapper zapper;
 	private ArrayList<Scientist> scientists;
+	private ArrayList<Missile> missiles;
 
 	public JetpackJoyridePanel(){
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -64,6 +65,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		coin1 = new Coin(400, 200);
 		zapper = new Zapper("diagonal", 700, 200);
 		scientists = new ArrayList<Scientist>();
+		missiles = new ArrayList<Missile>();
 
 		Timer myTimer = new Timer(100, this);
 		setFocusable(true);
@@ -89,7 +91,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	}
 
 	public void addScientists() {
-		boolean canSpawn = new Random().nextInt(25) == 0;
+		boolean canSpawn = new Random().nextDouble() < 0.04;
 		if(canSpawn) {
 			int randDir = rand.nextInt(2);
 			scientists.add(new Scientist(randDir));
@@ -105,6 +107,24 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 
 		scientists.removeAll(removedScientists);
+	}
+	public void addMissiles() {
+		boolean canSpawn = new Random().nextDouble() < 0.01;
+		if(canSpawn && missiles.isEmpty()) {
+			int randDir = rand.nextInt(2);
+			missiles.add(new Missile(randDir));
+		}
+	}
+	public void removeMissiles() {
+		ArrayList<Missile> removedMissiles = new ArrayList<Missile>();
+
+		for(Missile missile : missiles) {
+			if(missile.getX() + missile.getWidth() <= 0 || missile.getX() >= WIDTH) {
+				removedMissiles.add(missile);
+			}
+		}
+
+		missiles.removeAll(removedMissiles);
 	}
 
 	public static BufferedImage flipImage(BufferedImage pic) {
@@ -134,6 +154,12 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 		removeScientists();
 
+		addMissiles();
+		for(Missile missile : missiles) {
+			missile.move();
+		}
+		removeMissiles();
+
 		barry.move(allKeys[KeyEvent.VK_SPACE]);
 
 		if(barry.intersects(coin1)) {
@@ -154,6 +180,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		for(Scientist scientist : scientists) {
 			scientist.draw(g);
+		}
+
+		for(Missile missile : missiles) {
+			missile.draw(g);
 		}
 
 		barry.draw(g);
