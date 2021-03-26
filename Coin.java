@@ -5,6 +5,7 @@ import java.util.Random;
 public class Coin extends Rectangle {
     private static BufferedImage coinSpriteImage = JetpackJoyridePanel.loadBuffImg("coinsprite.png");
 	private static final int NUMSPRITES = 6;
+    public static final int WIDTH = coinSpriteImage.getWidth()/6, HEIGHT = coinSpriteImage.getHeight(), GAP = WIDTH+2;
     private static BufferedImage[] sprites = getSprites(coinSpriteImage, NUMSPRITES);
     private static final Random rand = new Random();
     
@@ -21,10 +22,9 @@ public class Coin extends Rectangle {
     }
     private static BufferedImage[] getSprites(BufferedImage spriteSheet, int numSprites) {
         BufferedImage[] sprites = new BufferedImage[numSprites];
-        int spriteWidth = spriteSheet.getWidth(null)/numSprites;
 
         for(int i = 0; i < numSprites; i++) {
-            sprites[i] = spriteSheet.getSubimage(i*spriteWidth, 0, spriteWidth, spriteSheet.getHeight(null));
+            sprites[i] = spriteSheet.getSubimage(i*WIDTH, 0, WIDTH, HEIGHT);
         }
 
         return sprites;

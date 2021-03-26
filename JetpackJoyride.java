@@ -56,7 +56,32 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private Zapper zapper;
 	private ArrayList<Scientist> scientists;
 	private ArrayList<Missile> missiles;
-	private Coin coin1;
+	// Coin.GAP
+	private Point[] COINFormation = {new Point(Coin.GAP,0), new Point(Coin.GAP*2,0), new Point(Coin.GAP*3,0),
+									new Point(0,Coin.GAP), new Point(0,Coin.GAP*2), new Point(0,Coin.GAP*3), 
+									new Point(Coin.GAP,Coin.GAP*4), new Point(Coin.GAP*2,Coin.GAP*4), new Point(Coin.GAP*3,Coin.GAP*4), // the "C" part
+
+									new Point(Coin.GAP*5,Coin.GAP), new Point(Coin.GAP*5,Coin.GAP*2), new Point(Coin.GAP*5,Coin.GAP*3),
+									new Point(Coin.GAP*8,Coin.GAP), new Point(Coin.GAP*8,Coin.GAP*2), new Point(Coin.GAP*8,Coin.GAP*3),
+									new Point(Coin.GAP*6,0), new Point(Coin.GAP*7,0), new Point(Coin.GAP*6,Coin.GAP*4), new Point(Coin.GAP*7,Coin.GAP*4),	// the "O" part
+
+									new Point(Coin.GAP*10,0), new Point(Coin.GAP*11,0), new Point(Coin.GAP*12,0),
+									new Point(Coin.GAP*10,Coin.GAP*4), new Point(Coin.GAP*11,Coin.GAP*4), new Point(Coin.GAP*12,Coin.GAP*4),
+									new Point(Coin.GAP*11,Coin.GAP), new Point(Coin.GAP*11,Coin.GAP*2), new Point(Coin.GAP*11,Coin.GAP*3),	// the "I" part
+
+									new Point(Coin.GAP*14,0), new Point(Coin.GAP*14,Coin.GAP), new Point(Coin.GAP*14,Coin.GAP*2),
+									new Point(Coin.GAP*14,Coin.GAP*3), new Point(Coin.GAP*14,Coin.GAP*4),
+									new Point(Coin.GAP*17,0), new Point(Coin.GAP*17,Coin.GAP), new Point(Coin.GAP*17,Coin.GAP*2),
+									new Point(Coin.GAP*17,Coin.GAP*3), new Point(Coin.GAP*17,Coin.GAP*4),
+									new Point(Coin.GAP*15,Coin.GAP), new Point(Coin.GAP*16,Coin.GAP*2),	// the "N" part
+									
+									new Point(Coin.GAP*20,0), new Point(Coin.GAP*21,0), new Point(Coin.GAP*22,0),
+									new Point(Coin.GAP*19,Coin.GAP*2), new Point(Coin.GAP*20,Coin.GAP*2), new Point(Coin.GAP*21,Coin.GAP*2), new Point(Coin.GAP*22,Coin.GAP*2),
+									new Point(Coin.GAP*19,Coin.GAP*4), new Point(Coin.GAP*20,Coin.GAP*4), new Point(Coin.GAP*21,Coin.GAP*4), new Point(Coin.GAP*22,Coin.GAP*4),
+									new Point(Coin.GAP*19,Coin.GAP), new Point(Coin.GAP*22,Coin.GAP*3)
+								};
+	private ArrayList<Coin> coins = new ArrayList<Coin>();
+	private ArrayList<Coin> removedCoins = new ArrayList<Coin>();
 
 	public JetpackJoyridePanel(){
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -65,7 +90,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		allKeys = new boolean[KeyEvent.KEY_LAST+1];
 		barry = new Barry("barry");
-		coin1 = new Coin(400, 200);
+		for(Point point: COINFormation) {
+			coins.add(new Coin(point.x+700, point.y+200));
+		}
 		zapper = new Zapper("horizontal", 700, 200);
 		scientists = new ArrayList<Scientist>();
 		missiles = new ArrayList<Missile>();
@@ -130,6 +157,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		missiles.removeAll(removedMissiles);
 	}
+	public void resetCoins() {
+		coins.removeAll(removedCoins);
+		removedCoins.clear();
+	}
 
 	public static BufferedImage flipImage(BufferedImage pic) {
 		BufferedImage reversedPic = new BufferedImage(pic.getWidth(), pic.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -147,7 +178,17 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		if(backgroundX <= -WIDTH) backgroundX = WIDTH;
 		if(reversebackgroundX <= -WIDTH) reversebackgroundX = WIDTH;
 
-		coin1.move();
+		for(Coin coin: coins) {
+			coin.move();
+			if(coin.getX() < 0) {
+				removedCoins.add(coin);
+			} else if(barry.intersects(coin)) {
+				System.out.println("got coin!");
+				removedCoins.add(coin);
+			}
+		}
+		resetCoins();
+
 		zapper.move();
 
 		addMissiles();
@@ -180,9 +221,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 		removeScientists();
 
-		if(barry.intersects(coin1)) {
-			System.out.println("got coin!");
-		}
 		if(barry.collidesWith(zapper)) {
 			System.out.println("hit zapper");
 		}
@@ -200,7 +238,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		g.drawImage(background, backgroundX, backgroundY, null);
 		g.drawImage(background, reversebackgroundX+WIDTH, reversebackgroundY, -WIDTH, HEIGHT, null);
 
-		coin1.draw(g);
+		for(Coin coin: coins) {
+			coin.draw(g);
+		}
+
 		zapper.draw(g);
 
 		for(Scientist scientist : scientists) {
