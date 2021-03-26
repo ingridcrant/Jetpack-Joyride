@@ -14,6 +14,9 @@ public class Coin extends Rectangle {
         this.Y = Y;
         currentSprite = 0;
     }
+    public BufferedImage getImage() {
+        return sprites[currentSprite];
+    }
     private static BufferedImage[] getSprites(BufferedImage spriteSheet, int numSprites) {
         BufferedImage[] sprites = new BufferedImage[numSprites];
         int spriteWidth = spriteSheet.getWidth(null)/numSprites;

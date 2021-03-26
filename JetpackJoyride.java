@@ -116,6 +116,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
         }
     	return reversedPic;
 	}
+
 	
     public void move(){
 		backgroundX -= dx;
@@ -136,10 +137,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		barry.move(allKeys[KeyEvent.VK_SPACE]);
 
-		if(barry.intersects(coin1)) {
+		if(barry.collidesWith(coin1)) {
 			System.out.println("got coin!");
 		}
-		if(zapper.intersects(barry)) {
+		if(barry.collidesWith(zapper)) {
 			System.out.println("hit zapper");
 		}
     }
