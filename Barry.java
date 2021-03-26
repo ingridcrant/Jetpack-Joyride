@@ -14,7 +14,7 @@ public class Barry extends Rectangle {
 
     private int WIDTH, HEIGHT;
     private static final int TOPBORDERHEIGHT = 120, BOTTOMBORDERHEIGHT = 100;
-    private static final int X = 100;
+    private static final int X = JetpackJoyridePanel.WIDTH/3;
     private int Y, risingDy = 20, fallingDy = 25;
 
     public Barry(String picName) {
