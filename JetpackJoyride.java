@@ -97,7 +97,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		boolean canSpawn = new Random().nextDouble() < 0.04;
 		if(canSpawn) {
 			int randDir = rand.nextInt(2);
-			scientists.add(new Scientist(randDir));
+			int canCrouch = rand.nextInt(2);
+			scientists.add(new Scientist(randDir, canCrouch));
 		}
 	}
 	public void removeScientists() {
@@ -161,7 +162,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		for(Scientist scientist : scientists) {
 			scientist.move();
 			if(!scientist.isFainted()) {
-				if(JetpackJoyridePanel.barry.getY() > scientist.getY() - JetpackJoyridePanel.barry.getHeight()) { // if Barry is on the same plane as the scientist
+				if(JetpackJoyridePanel.barry.getY() > scientist.getY() - JetpackJoyridePanel.barry.getHeight() && scientist.canCrouch()) { // if Barry is on the same plane as the scientist
 					scientist.crouch();
 				}
 				else {
