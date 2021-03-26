@@ -53,10 +53,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private Random rand = new Random();
 
 	public static Barry barry;
-	private Coin coin1;
 	private Zapper zapper;
 	private ArrayList<Scientist> scientists;
 	private ArrayList<Missile> missiles;
+	private Coin coin1;
 
 	public JetpackJoyridePanel(){
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -66,7 +66,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		allKeys = new boolean[KeyEvent.KEY_LAST+1];
 		barry = new Barry("barry");
 		coin1 = new Coin(400, 200);
-		zapper = new Zapper("diagonal", 700, 200);
+		zapper = new Zapper("horizontal", 700, 200);
 		scientists = new ArrayList<Scientist>();
 		missiles = new ArrayList<Missile>();
 

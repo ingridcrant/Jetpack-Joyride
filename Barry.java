@@ -91,15 +91,9 @@ public class Barry extends Rectangle {
     private boolean collision(Zapper zapper, int x, int y) {
         boolean collision = false;
 
-        BufferedImage barryImage = getImage();
-        int barryPixel = barryImage.getRGB(x - (int) getX(), y - (int) getY());
+        int barryPixel = getImage().getRGB(x - (int) getX(), y - (int) getY());
+        int zapperPixel = zapper.getImage().getRGB(x - zapper.getX(), y - zapper.getY());
         
-        int zapperPixel;
-        if (zapper.getType() == "diagonal") {
-            zapperPixel = Zapper.diagonalZapper.getRGB(x - zapper.getX(), y - zapper.getY());
-        } else {
-            zapperPixel = Zapper.normalZapper.getRGB(x - zapper.getX(), y - zapper.getY());
-        }
         // 255 is completely transparent, you might consider using something
         // a little less absolute, like 225, to give you a sligtly
         // higher hit right, for example...
