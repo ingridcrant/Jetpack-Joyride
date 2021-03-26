@@ -30,12 +30,12 @@ public class Missile extends Rectangle {
         height = missilePic.getHeight();
 
         if(dir == LEFT) {
-            x = JetpackJoyridePanel.WIDTH;
+            x = JetpackJoyridePanel.WIDTH - width;
         }
         else {
             missilePic = JetpackJoyridePanel.flipImage(missilePic);
             targetingPic = JetpackJoyridePanel.flipImage(targetingPic);
-            x = 0 - width;
+            x = 0;
         }
 
         y = (int) JetpackJoyridePanel.barry.getY();
@@ -55,12 +55,12 @@ public class Missile extends Rectangle {
 
         if(firing) {
             if(dir == LEFT) {
-                translate(-25, 0);
-                x -= 25;
+                translate(-35, 0);
+                x -= 35;
             }
             else {
-                translate(5, 0);
-                x += 5;
+                translate(15, 0);
+                x += 15;
             }
         }
         if(targeting) {
@@ -69,6 +69,13 @@ public class Missile extends Rectangle {
     }
 
     public void fire() {
+        if(dir == LEFT) {
+            x = JetpackJoyridePanel.WIDTH;
+        }
+        else {
+            x = 0 - width;
+        }
+
         warning = false;
         targeting = false;
         firing = true;
