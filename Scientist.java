@@ -7,10 +7,11 @@ public class Scientist extends Rectangle {
     private BufferedImage scientistWalking1 = JetpackJoyridePanel.loadBuffImg("scientist_stationary.png");
     private BufferedImage scientistWalking2 = JetpackJoyridePanel.loadBuffImg("scientist_moving.png");
     private BufferedImage scientistCrouching = JetpackJoyridePanel.loadBuffImg("scientist_crouching.png");
-    private BufferedImage scientistFainting = JetpackJoyridePanel.loadBuffImg("scientist_fainting.png");;
+    private BufferedImage scientistFainting = JetpackJoyridePanel.loadBuffImg("scientist_fainting.png");
 
     private int x, y;
     private int dir;
+    private static final int speed = 5;
     private int width, height;
 
     private boolean walking, crouching, fainting;
@@ -42,47 +43,40 @@ public class Scientist extends Rectangle {
     }
 
     public void move() {
+        int dx;
         if(walking) {
             if(dir == LEFT) {
-                translate(-15, 0);
-                x -= 15;
+                dx = JetpackJoyridePanel.dx-speed;
             }
             else {
-                translate(-5, 0);
-                x -= 5;
+                dx = JetpackJoyridePanel.dx+speed;
             }
         }
         else {
-            translate(-10, 0);
-            x -= 10;
+            dx = JetpackJoyridePanel.dx;
         }
+        translate(dx, 0);
+        x += dx;
     }
-
-    // if Barry is approaching the scientist
-    public void barryApproaching() {
-        if(fainting == false) {
-            if(JetpackJoyridePanel.barry.getY() > y - JetpackJoyridePanel.barry.getHeight()) { // if Barry is on the same plane as the scientist
-                walking = false;
-                crouching = true; // makes scientist crouch
-                fainting = false;
-            }
-            else {
-                walking = true; // makes scientist walk normally
-                crouching = false;
-                fainting = false;
-            }
-        }
+    public void crouch() {
+        walking = false;
+        crouching = true;
+        fainting = false;
     }
-
+    public void walk() {
+        walking = true;
+        crouching = false;
+        fainting = false;
+    }
     // if scientist is hit by Barry
-    public void hitByBarry() {
-        if(this.intersects(JetpackJoyridePanel.barry)) {
-            walking = false;
-            crouching = false;
-            fainting = true; // makes scientist faint
-        }
+    public void faint() {
+        walking = false;
+        crouching = false;
+        fainting = true; // makes scientist faint
     }
-
+    public boolean isFainted() {
+        return fainting;
+    }
     public void draw(Graphics g) {
         if(walking) {
             walkingPoseCount++;

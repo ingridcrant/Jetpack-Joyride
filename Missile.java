@@ -3,8 +3,9 @@ import java.awt.image.*;
 
 public class Missile extends Rectangle {
     private static final int LEFT = 0, RIGHT = 1;
-    private static final int maxFramesBeforeFiring = 240;
-    private static final int maxFramesBeforeWarning = 180;
+    private static final int MAXFRAMESBEFOREFIRING = 15;
+    private static final int MAXFRAMESBEFOREWARNING = 10;
+    private static final int MISSILESPEED = 50;
 
     private int x, y;
     private int width, height;
@@ -43,25 +44,34 @@ public class Missile extends Rectangle {
         setBounds(x, y, width, height);
     }
 
+    public BufferedImage getImage() {
+        return missilePic;
+    }
+
+    public boolean isFiring() {
+        return firing;
+    }
+
     public void move() {
         currentFrames++;
 
-        if(currentFrames == maxFramesBeforeWarning) {
+        if(currentFrames == MAXFRAMESBEFOREWARNING) {
             warn();
         }
-        else if(currentFrames == maxFramesBeforeFiring) {
+        else if(currentFrames == MAXFRAMESBEFOREFIRING) {
             fire();
         }
 
         if(firing) {
+            int dx;
             if(dir == LEFT) {
-                translate(-35, 0);
-                x -= 35;
+                dx = JetpackJoyridePanel.dx-MISSILESPEED;
             }
             else {
-                translate(15, 0);
-                x += 15;
+                dx = JetpackJoyridePanel.dx+MISSILESPEED;
             }
+            translate(dx, 0);
+            x += dx;
         }
         if(targeting) {
             y = (int) JetpackJoyridePanel.barry.getY();

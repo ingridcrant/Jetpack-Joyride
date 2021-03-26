@@ -14,8 +14,8 @@ public class Barry extends Rectangle {
 
     private int WIDTH, HEIGHT;
     private static final int TOPBORDERHEIGHT = 120, BOTTOMBORDERHEIGHT = 100;
-    private static final int X = 50;
-    private int Y, risingDy = 12, fallingDy =15;
+    private static final int X = 100;
+    private int Y, risingDy = 20, fallingDy = 25;
 
     public Barry(String picName) {
         super();
@@ -50,27 +50,6 @@ public class Barry extends Rectangle {
         if(Y == JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT) {
             RISING = false; FALLING = false; WALKING = true;
         }
-    }
-
-    public boolean collidesWith(Coin coin) {
-        // Check if the boundires intersect
-        if (intersects(coin)) {
-            // Calculate the collision overlay
-            Rectangle intersectBounds = getCollision(coin);
-
-            if (!intersectBounds.isEmpty()) {
-                // Check all the pixels in the collision overlay to determine
-                // if there are any non-alpha pixel collisions...
-                for (int x = intersectBounds.x; x < intersectBounds.x + intersectBounds.width; x++) {
-                    for (int y = intersectBounds.y; y < intersectBounds.y + intersectBounds.height; y++) {
-                        if (collision(coin, x, y)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     public boolean collidesWith(Zapper zapper) {
@@ -125,23 +104,6 @@ public class Barry extends Rectangle {
         // a little less absolute, like 225, to give you a sligtly
         // higher hit right, for example...
         if (((barryPixel >> 24) & 0xFF) < 255 && ((zapperPixel >> 24) & 0xFF) < 255) {
-            collision = true;
-        }
-        return collision;
-    }
-
-    private boolean collision(Coin coin, int x, int y) {
-        boolean collision = false;
-
-        BufferedImage barryImage = getImage();
-        int barryPixel = barryImage.getRGB(x - (int) getX(), y - (int) getY());
-        
-        BufferedImage coinImage = coin.getImage();
-        int coinPixel = coinImage.getRGB(x - (int) coin.getX(), y - (int) coin.getY());
-        // 255 is completely transparent, you might consider using something
-        // a little less absolute, like 225, to give you a sligtly
-        // higher hit right, for example...
-        if (((barryPixel >> 24) & 0xFF) < 255 && ((coinPixel >> 24) & 0xFF) < 255) {
             collision = true;
         }
         return collision;

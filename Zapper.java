@@ -7,8 +7,6 @@ public class Zapper {
 
     private String type;
     private Rectangle bounds;
-    
-    private static final int dx = JetpackJoyridePanel.dx;
 
     public Zapper(String type, int X, int Y) {
         this.type = type;
@@ -36,7 +34,7 @@ public class Zapper {
     }
 
     public void move() {
-        bounds.translate(-dx, 0);
+        bounds.translate(JetpackJoyridePanel.dx, 0);
     }
 
     public void draw(Graphics g) {

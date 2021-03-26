@@ -30,8 +30,8 @@ public class Coin extends Rectangle {
     public void move() {
         currentSprite = (currentSprite+1)%NUMSPRITES;
 
-        X -= 10;
-        translate(-10, 0);
+        X += JetpackJoyridePanel.dx;
+        translate(JetpackJoyridePanel.dx, 0);
     }
     public void draw(Graphics g) {
         g.drawImage(sprites[currentSprite], X, Y, null);

@@ -44,7 +44,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
     public static final int WIDTH=1000, HEIGHT=750;
     private static final Image background = new ImageIcon("images/background.png").getImage();
 	private static int backgroundX = 0, backgroundY = 0, reversebackgroundX = 1000, reversebackgroundY = 0;
-	public static final int dx = 10;
+	public static final int dx = -20;
 	
 	private static boolean[] allKeys;
 	private Random rand = new Random();
@@ -139,21 +139,13 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	
     public void move(){
-		backgroundX -= dx;
-		reversebackgroundX -= dx;
+		backgroundX += dx;
+		reversebackgroundX += dx;
 		if(backgroundX <= -WIDTH) backgroundX = WIDTH;
 		if(reversebackgroundX <= -WIDTH) reversebackgroundX = WIDTH;
 
 		coin1.move();
 		zapper.move();
-
-		addScientists();
-		for(Scientist scientist : scientists) {
-			scientist.move();
-			scientist.barryApproaching();
-			scientist.hitByBarry();
-		}
-		removeScientists();
 
 		addMissiles();
 		for(Missile missile : missiles) {
@@ -163,11 +155,40 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		barry.move(allKeys[KeyEvent.VK_SPACE]);
 
-		if(barry.collidesWith(coin1)) {
+		addScientists();
+		for(Scientist scientist : scientists) {
+			scientist.move();
+			if(!scientist.isFainted()) {
+				if(JetpackJoyridePanel.barry.getY() > scientist.getY() - JetpackJoyridePanel.barry.getHeight()) { // if Barry is on the same plane as the scientist
+					scientist.crouch();
+				}
+				else {
+					scientist.walk();
+				}
+			}
+			if(scientist.intersects(barry)) {
+				scientist.faint();
+			}
+			for(Missile missile : missiles) {
+				if(scientist.intersects(missile)) {
+					scientist.faint();
+				}
+			}
+		}
+		removeScientists();
+
+		if(barry.intersects(coin1)) {
 			System.out.println("got coin!");
 		}
 		if(barry.collidesWith(zapper)) {
 			System.out.println("hit zapper");
+		}
+		for(Missile missile: missiles) {
+			if(missile.isFiring()) {
+				if(barry.intersects(missile)) {
+					System.out.println("barry tumbles");
+				}
+			}
 		}
     }
     
