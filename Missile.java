@@ -3,8 +3,8 @@ import java.awt.image.*;
 
 public class Missile extends Rectangle {
     private static final int LEFT = 0, RIGHT = 1;
-    private static final int maxFramesBeforeFiring = 240;
-    private static final int maxFramesBeforeWarning = 180;
+    private static final int maxFramesBeforeFiring = 80;
+    private static final int maxFramesBeforeWarning = 60;
 
     private int x, y;
     private int width, height;
@@ -55,12 +55,12 @@ public class Missile extends Rectangle {
 
         if(firing) {
             if(dir == LEFT) {
-                translate(-35, 0);
-                x -= 35;
+                translate(-40, 0);
+                x -= 40;
             }
             else {
-                translate(15, 0);
-                x += 15;
+                translate(20, 0);
+                x += 20;
             }
         }
         if(targeting) {
