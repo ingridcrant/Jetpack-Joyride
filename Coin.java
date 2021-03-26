@@ -29,11 +29,14 @@ public class Coin extends Rectangle {
 
         return sprites;
     }
+    public void translateCoin(int xx, int yy) {
+        X += xx;
+        Y += yy;
+        translate(xx, yy);
+    }
     public void move() {
         currentSprite = (currentSprite+1)%NUMSPRITES;
-
-        X += JetpackJoyridePanel.dx;
-        translate(JetpackJoyridePanel.dx, 0);
+        translateCoin(JetpackJoyridePanel.dx, 0);
     }
     public void draw(Graphics g) {
         g.drawImage(sprites[currentSprite], X, Y, null);

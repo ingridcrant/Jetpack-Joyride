@@ -57,28 +57,28 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private ArrayList<Scientist> scientists;
 	private ArrayList<Missile> missiles;
 	// Coin.GAP
-	private Point[] COINFormation = {new Point(Coin.GAP,0), new Point(Coin.GAP*2,0), new Point(Coin.GAP*3,0),
-									new Point(0,Coin.GAP), new Point(0,Coin.GAP*2), new Point(0,Coin.GAP*3), 
-									new Point(Coin.GAP,Coin.GAP*4), new Point(Coin.GAP*2,Coin.GAP*4), new Point(Coin.GAP*3,Coin.GAP*4), // the "C" part
+	private Coin[] COINFormation = {new Coin(Coin.GAP,0), new Coin(Coin.GAP*2,0), new Coin(Coin.GAP*3,0),
+									new Coin(0,Coin.GAP), new Coin(0,Coin.GAP*2), new Coin(0,Coin.GAP*3), 
+									new Coin(Coin.GAP,Coin.GAP*4), new Coin(Coin.GAP*2,Coin.GAP*4), new Coin(Coin.GAP*3,Coin.GAP*4), // the "C" part
 
-									new Point(Coin.GAP*5,Coin.GAP), new Point(Coin.GAP*5,Coin.GAP*2), new Point(Coin.GAP*5,Coin.GAP*3),
-									new Point(Coin.GAP*8,Coin.GAP), new Point(Coin.GAP*8,Coin.GAP*2), new Point(Coin.GAP*8,Coin.GAP*3),
-									new Point(Coin.GAP*6,0), new Point(Coin.GAP*7,0), new Point(Coin.GAP*6,Coin.GAP*4), new Point(Coin.GAP*7,Coin.GAP*4),	// the "O" part
+									new Coin(Coin.GAP*5,Coin.GAP), new Coin(Coin.GAP*5,Coin.GAP*2), new Coin(Coin.GAP*5,Coin.GAP*3),
+									new Coin(Coin.GAP*8,Coin.GAP), new Coin(Coin.GAP*8,Coin.GAP*2), new Coin(Coin.GAP*8,Coin.GAP*3),
+									new Coin(Coin.GAP*6,0), new Coin(Coin.GAP*7,0), new Coin(Coin.GAP*6,Coin.GAP*4), new Coin(Coin.GAP*7,Coin.GAP*4),	// the "O" part
 
-									new Point(Coin.GAP*10,0), new Point(Coin.GAP*11,0), new Point(Coin.GAP*12,0),
-									new Point(Coin.GAP*10,Coin.GAP*4), new Point(Coin.GAP*11,Coin.GAP*4), new Point(Coin.GAP*12,Coin.GAP*4),
-									new Point(Coin.GAP*11,Coin.GAP), new Point(Coin.GAP*11,Coin.GAP*2), new Point(Coin.GAP*11,Coin.GAP*3),	// the "I" part
+									new Coin(Coin.GAP*10,0), new Coin(Coin.GAP*11,0), new Coin(Coin.GAP*12,0),
+									new Coin(Coin.GAP*10,Coin.GAP*4), new Coin(Coin.GAP*11,Coin.GAP*4), new Coin(Coin.GAP*12,Coin.GAP*4),
+									new Coin(Coin.GAP*11,Coin.GAP), new Coin(Coin.GAP*11,Coin.GAP*2), new Coin(Coin.GAP*11,Coin.GAP*3),	// the "I" part
 
-									new Point(Coin.GAP*14,0), new Point(Coin.GAP*14,Coin.GAP), new Point(Coin.GAP*14,Coin.GAP*2),
-									new Point(Coin.GAP*14,Coin.GAP*3), new Point(Coin.GAP*14,Coin.GAP*4),
-									new Point(Coin.GAP*17,0), new Point(Coin.GAP*17,Coin.GAP), new Point(Coin.GAP*17,Coin.GAP*2),
-									new Point(Coin.GAP*17,Coin.GAP*3), new Point(Coin.GAP*17,Coin.GAP*4),
-									new Point(Coin.GAP*15,Coin.GAP), new Point(Coin.GAP*16,Coin.GAP*2),	// the "N" part
+									new Coin(Coin.GAP*14,0), new Coin(Coin.GAP*14,Coin.GAP), new Coin(Coin.GAP*14,Coin.GAP*2),
+									new Coin(Coin.GAP*14,Coin.GAP*3), new Coin(Coin.GAP*14,Coin.GAP*4),
+									new Coin(Coin.GAP*17,0), new Coin(Coin.GAP*17,Coin.GAP), new Coin(Coin.GAP*17,Coin.GAP*2),
+									new Coin(Coin.GAP*17,Coin.GAP*3), new Coin(Coin.GAP*17,Coin.GAP*4),
+									new Coin(Coin.GAP*15,Coin.GAP), new Coin(Coin.GAP*16,Coin.GAP*2),	// the "N" part
 									
-									new Point(Coin.GAP*20,0), new Point(Coin.GAP*21,0), new Point(Coin.GAP*22,0),
-									new Point(Coin.GAP*19,Coin.GAP*2), new Point(Coin.GAP*20,Coin.GAP*2), new Point(Coin.GAP*21,Coin.GAP*2), new Point(Coin.GAP*22,Coin.GAP*2),
-									new Point(Coin.GAP*19,Coin.GAP*4), new Point(Coin.GAP*20,Coin.GAP*4), new Point(Coin.GAP*21,Coin.GAP*4), new Point(Coin.GAP*22,Coin.GAP*4),
-									new Point(Coin.GAP*19,Coin.GAP), new Point(Coin.GAP*22,Coin.GAP*3)
+									new Coin(Coin.GAP*20,0), new Coin(Coin.GAP*21,0), new Coin(Coin.GAP*22,0),
+									new Coin(Coin.GAP*19,Coin.GAP*2), new Coin(Coin.GAP*20,Coin.GAP*2), new Coin(Coin.GAP*21,Coin.GAP*2), new Coin(Coin.GAP*22,Coin.GAP*2),
+									new Coin(Coin.GAP*19,Coin.GAP*4), new Coin(Coin.GAP*20,Coin.GAP*4), new Coin(Coin.GAP*21,Coin.GAP*4), new Coin(Coin.GAP*22,Coin.GAP*4),
+									new Coin(Coin.GAP*19,Coin.GAP), new Coin(Coin.GAP*22,Coin.GAP*3)
 								};
 	private ArrayList<Coin> coins = new ArrayList<Coin>();
 	private ArrayList<Coin> removedCoins = new ArrayList<Coin>();
@@ -90,8 +90,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		allKeys = new boolean[KeyEvent.KEY_LAST+1];
 		barry = new Barry("barry");
-		for(Point point: COINFormation) {
-			coins.add(new Coin(point.x+700, point.y+200));
+		for(Coin coin: COINFormation) {
+			coin.translateCoin(700,200);
+			coins.add(coin);
 		}
 		zapper = new Zapper("horizontal", 700, 200);
 		scientists = new ArrayList<Scientist>();
