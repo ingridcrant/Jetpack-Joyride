@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.geom.*;
 import java.awt.image.*;
 
 public class Barry extends Rectangle {
@@ -49,6 +50,101 @@ public class Barry extends Rectangle {
         if(Y == JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT) {
             RISING = false; FALLING = false; WALKING = true;
         }
+    }
+
+    public boolean collidesWith(Coin coin) {
+        // Check if the boundires intersect
+        if (intersects(coin)) {
+            // Calculate the collision overlay
+            Rectangle intersectBounds = getCollision(coin);
+
+            if (!intersectBounds.isEmpty()) {
+                // Check all the pixels in the collision overlay to determine
+                // if there are any non-alpha pixel collisions...
+                for (int x = intersectBounds.x; x < intersectBounds.x + intersectBounds.width; x++) {
+                    for (int y = intersectBounds.y; y < intersectBounds.y + intersectBounds.height; y++) {
+                        if (collision(coin, x, y)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean collidesWith(Zapper zapper) {
+        // Check if the boundires intersect
+        if (intersects(zapper.getRect())) {
+            // Calculate the collision overlay
+            Rectangle intersectBounds = getCollision(zapper.getRect());
+
+            if (!intersectBounds.isEmpty()) {
+                // Check all the pixels in the collision overlay to determine
+                // if there are any non-alpha pixel collisions...
+                for (int x = intersectBounds.x; x < intersectBounds.x + intersectBounds.width; x++) {
+                    for (int y = intersectBounds.y; y < intersectBounds.y + intersectBounds.height; y++) {
+                        if (collision(zapper, x, y)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    protected Rectangle getCollision(Rectangle rect2) {
+        Area a1 = new Area(this);
+        Area a2 = new Area(rect2);
+        a1.intersect(a2);
+        return a1.getBounds();
+    }
+
+    /**
+     * Test if a given x/y position of the images contains transparent
+     * pixels or not...
+     * @param x
+     * @param y
+     * @return 
+     */
+
+    private boolean collision(Zapper zapper, int x, int y) {
+        boolean collision = false;
+
+        BufferedImage barryImage = getImage();
+        int barryPixel = barryImage.getRGB(x - (int) getX(), y - (int) getY());
+        
+        int zapperPixel;
+        if (zapper.getType() == "diagonal") {
+            zapperPixel = Zapper.diagonalZapper.getRGB(x - zapper.getX(), y - zapper.getY());
+        } else {
+            zapperPixel = Zapper.normalZapper.getRGB(x - zapper.getX(), y - zapper.getY());
+        }
+        // 255 is completely transparent, you might consider using something
+        // a little less absolute, like 225, to give you a sligtly
+        // higher hit right, for example...
+        if (((barryPixel >> 24) & 0xFF) < 255 && ((zapperPixel >> 24) & 0xFF) < 255) {
+            collision = true;
+        }
+        return collision;
+    }
+
+    private boolean collision(Coin coin, int x, int y) {
+        boolean collision = false;
+
+        BufferedImage barryImage = getImage();
+        int barryPixel = barryImage.getRGB(x - (int) getX(), y - (int) getY());
+        
+        BufferedImage coinImage = coin.getImage();
+        int coinPixel = coinImage.getRGB(x - (int) coin.getX(), y - (int) coin.getY());
+        // 255 is completely transparent, you might consider using something
+        // a little less absolute, like 225, to give you a sligtly
+        // higher hit right, for example...
+        if (((barryPixel >> 24) & 0xFF) < 255 && ((coinPixel >> 24) & 0xFF) < 255) {
+            collision = true;
+        }
+        return collision;
     }
 
     public BufferedImage getImage() {
