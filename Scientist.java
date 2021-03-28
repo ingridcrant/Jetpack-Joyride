@@ -15,6 +15,7 @@ public class Scientist extends Rectangle {
     private static final int speed = 5;
     private int width, height;
 
+    private static boolean isMoving = true;
     private boolean walking, crouching, fainting;
     private boolean flipped = false;
     private boolean crouch = false; // only the smart scientists about 50% can crouch
@@ -92,9 +93,11 @@ public class Scientist extends Rectangle {
     public boolean canCrouch() {
         return crouch;
     }
-
+    public static void stopMoving() {
+        isMoving = false;
+    }
     public void draw(Graphics g) {
-        if(walking) {
+        if(walking && isMoving) {
             walkingPoseCount++;
             if(walkingPoseCount > maxWalkingPoseCount/2) {
                 g.drawImage(scientistWalking1, x, y, null);

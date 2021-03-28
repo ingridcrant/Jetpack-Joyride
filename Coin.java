@@ -9,6 +9,7 @@ public class Coin extends Rectangle {
     private static BufferedImage[] sprites = getSprites(coinSpriteImage, NUMSPRITES);
     private static final Random rand = new Random();
     
+    private static boolean isRotating = true;
     private int currentSprite, X, Y;
 
     public Coin(int X, int Y) {
@@ -34,8 +35,13 @@ public class Coin extends Rectangle {
         Y += yy;
         translate(xx, yy);
     }
+    public static void stopRotating() {
+        isRotating = false;
+    }
     public void move() {
-        currentSprite = (currentSprite+1)%NUMSPRITES;
+        if(isRotating) {
+            currentSprite = (currentSprite+1)%NUMSPRITES;
+        }
         translateCoin(JetpackJoyridePanel.dx, 0);
     }
     public void draw(Graphics g) {

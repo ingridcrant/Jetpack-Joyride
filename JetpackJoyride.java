@@ -5,7 +5,6 @@ Ingrid and Isabel Crant
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.imageio.*;
@@ -67,7 +66,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private String screen = "start";
 	private boolean isGameOver = false;
 	private Image startScreen;
-	private boolean writtenToFiles = false;
 
 	// Coin.GAP
 	private final Coin[] COINFormation = {new Coin(Coin.GAP,0), new Coin(Coin.GAP*2,0), new Coin(Coin.GAP*3,0),
@@ -305,6 +303,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
     public void move(){
 		if(isGameOver) {
 			screen = "game over";
+			checkRun();
+			setScore(currentCoins, "Coins.txt");
+			setScore(longestRun, "LongestRun.txt");
 			return;
 		}
 		backgroundX += dx;
@@ -369,7 +370,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		for(Missile missile: missiles) {
 			if(missile.isFiring()) {
 				if(barry.intersects(missile)) {
-					System.out.println("barry tumbles");
 					isGameOver = true;
 				}
 			}
@@ -383,7 +383,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		if(screen.equals("start")) {
 			g.drawImage(startScreen, 0, 0, null);
 		}
-		else if(screen.equals("game")) {
+		else if(screen.equals("game") || screen.equals("game over")) {
 			g.drawImage(background, backgroundX, backgroundY, null);
 			g.drawImage(background, reversebackgroundX+WIDTH, reversebackgroundY, -WIDTH, HEIGHT, null);
 
@@ -403,17 +403,16 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 			barry.draw(g);
 
-			drawScores(g);
-		}
-		else if(screen.equals("game over")) {
-			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, WIDTH, HEIGHT);
+			if(screen.equals("game")) {
+				drawScores(g);
+			}
 
-			if(!writtenToFiles) {
-				checkRun();
-				setScore(currentCoins, "Coins.txt");
-				setScore(longestRun, "LongestRun.txt");
-				writtenToFiles = true;
+			if(screen.equals("game over")) {
+				Scientist.stopMoving();
+				Coin.stopRotating();
+				Color transparentBlack = new Color(0, 0, 0, 160);
+				g.setColor(transparentBlack);
+				g.fillRect(0, 0, WIDTH, HEIGHT);
 			}
 		}
 	}
