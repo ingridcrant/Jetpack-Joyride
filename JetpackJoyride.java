@@ -12,6 +12,7 @@ import javax.imageio.*;
 import java.awt.image.*;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class JetpackJoyride extends JFrame{
 	/**
@@ -63,6 +64,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	private String screen = "start";
 	private Image startScreen;
+	private boolean writtenToFiles = false;
 
 	// Coin.GAP
 	private final Coin[] COINFormation = {new Coin(Coin.GAP,0), new Coin(Coin.GAP*2,0), new Coin(Coin.GAP*3,0),
@@ -175,27 +177,19 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
     }
 
 	public Integer getScore(String fileName) {
-		FileReader readFile = null;
-		BufferedReader reader = null;
+		File file = new File(fileName);
 
 		try {
-			readFile = new FileReader(fileName);
-			reader = new BufferedReader(readFile);
-
-			return Integer.parseInt(reader.readLine());
-		}
-		catch (Exception e) {
+			if(file.length() == 0) return 0;
+			else {
+				Scanner myReader = new Scanner(file);
+				int data = Integer.parseInt(myReader.nextLine());
+				myReader.close();
+				return data;
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 			return 0;
-		}
-		finally {
-			try {
-				if(reader != null) {
-					reader.close();
-				}
-			}
-			catch(IOException e) {
-				return 0;
-			}
 		}
 	}
 	public void setScore(int score, String fileName) {
@@ -206,23 +200,13 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			} catch (IOException e) {}
 		}
 
-		FileWriter writeFile = null;
-		BufferedWriter writer = null;
-
 		try {
-			writeFile = new FileWriter(file);
-			writer = new BufferedWriter(writeFile);
-			writer.write(score);
-		}
-		catch (Exception e) {}
-		finally {
-			try {
-				if(writer != null) {
-					writer.close();
-				}
-			}
-			catch(IOException e) {}
-		}
+			FileWriter myWriter = new FileWriter(file);
+			myWriter.write(String.valueOf(score));
+			myWriter.close();
+		  } catch (IOException e) {
+			e.printStackTrace();
+		  }
 	}
 
  	// Main Game Loop
@@ -317,7 +301,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			if(coin.getX() < 0) {
 				removedCoins.add(coin);
 			} else if(barry.intersects(coin)) {
-				System.out.println("got coin!");
 				removedCoins.add(coin);
 				currentCoins++;
 			}
@@ -357,7 +340,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		removeScientists();
 
 		if(barry.collidesWith(zapper)) {
-			System.out.println("hit zapper");
 			screen = "game over";
 		}
 		for(Missile missile: missiles) {
@@ -404,8 +386,12 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, WIDTH, HEIGHT);
 
-			setScore(currentCoins, "Coins.txt");
-			setScore(longestRun, "LongestRun.txt");
+			if(!writtenToFiles) {
+				checkRun();
+				setScore(currentCoins, "Coins.txt");
+				setScore(longestRun, "LongestRun.txt");
+				writtenToFiles = true;
+			}
 		}
 	}
 
