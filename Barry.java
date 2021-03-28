@@ -7,6 +7,7 @@ public class Barry extends Rectangle {
     private static final BufferedImage barryWalking2 = JetpackJoyridePanel.loadBuffImg("barry2.png");
     private static final BufferedImage barryRising = JetpackJoyridePanel.loadBuffImg("barry_rising.png");
     private static final BufferedImage barryFalling = JetpackJoyridePanel.loadBuffImg("barry_falling.png");
+    private final int BLANK = 0x00000000;
 
     private boolean RISING, FALLING, WALKING;
     private static int maxWalkingPoseCount = 4;
@@ -50,6 +51,7 @@ public class Barry extends Rectangle {
         if(Y == JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT) {
             RISING = false; FALLING = false; WALKING = true;
         }
+        setBounds(X, Y, getImage().getWidth(), getImage().getHeight());
     }
 
     public boolean collidesWith(Zapper zapper) {
@@ -57,13 +59,18 @@ public class Barry extends Rectangle {
         if (intersects(zapper.getRect())) {
             // Calculate the collision overlay
             Rectangle intersectBounds = getCollision(zapper.getRect());
-
             if (!intersectBounds.isEmpty()) {
                 // Check all the pixels in the collision overlay to determine
                 // if there are any non-alpha pixel collisions...
                 for (int x = intersectBounds.x; x < intersectBounds.x + intersectBounds.width; x++) {
                     for (int y = intersectBounds.y; y < intersectBounds.y + intersectBounds.height; y++) {
-                        if (collision(zapper, x, y)) {
+                        int barryPixel = getImage().getRGB(x - (int) getX(), y - (int) getY());
+                        int zapperPixel = zapper.getImage().getRGB(x - zapper.getX(), y - zapper.getY());
+                        
+                        // 255 is completely transparent, you might consider using something
+                        // a little less absolute, like 225, to give you a sligtly
+                        // higher hit right, for example...
+                        if (barryPixel != BLANK && zapperPixel != BLANK) {
                             return true;
                         }
                     }
@@ -87,21 +94,6 @@ public class Barry extends Rectangle {
      * @param y
      * @return 
      */
-
-    private boolean collision(Zapper zapper, int x, int y) {
-        boolean collision = false;
-
-        int barryPixel = getImage().getRGB(x - (int) getX(), y - (int) getY());
-        int zapperPixel = zapper.getImage().getRGB(x - zapper.getX(), y - zapper.getY());
-        
-        // 255 is completely transparent, you might consider using something
-        // a little less absolute, like 225, to give you a sligtly
-        // higher hit right, for example...
-        if (((barryPixel >> 24) & 0xFF) < 255 && ((zapperPixel >> 24) & 0xFF) < 255) {
-            collision = true;
-        }
-        return collision;
-    }
 
     public BufferedImage getImage() {
         if(WALKING) {
