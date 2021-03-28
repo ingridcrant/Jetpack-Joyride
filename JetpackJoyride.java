@@ -48,7 +48,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	public static final int dx = -20;
 
 	private static final int LEFT = 0, RIGHT = 1;
-	
+
+	private static Font myFont;
+
 	private static boolean[] allKeys;
 	private Random rand = new Random();
 
@@ -63,6 +65,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private int longestRun;
 
 	private String screen = "start";
+	private boolean isGameOver = false;
 	private Image startScreen;
 	private boolean writtenToFiles = false;
 
@@ -147,9 +150,16 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		addMouseListener(this);
 		addKeyListener(this);
 
+		InputStream is = JetpackJoyridePanel.class.getResourceAsStream("NewAthleticM54.ttf");
+		try {
+			myFont = Font.createFont(Font.TRUETYPE_FONT, is);
+		} catch(Exception e) {
+			myFont = new Font("Courier New", 1, 30);
+		}
+
 		allKeys = new boolean[KeyEvent.KEY_LAST+1];
 		barry = new Barry("barry");
-		zapper = new Zapper("horizontal", 700, 200);
+		zapper = new Zapper("diagonal2", 700, 200);
 		scientists = new ArrayList<Scientist>();
 		missiles = new ArrayList<Missile>();
 		
@@ -271,9 +281,19 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	}
 
 	public void drawScores(Graphics g) {
-		g.drawString(currentRun + "M", 10, 10);
-		g.drawString("BEST: " + longestRun, 10, 20);
-		g.drawString(currentCoins + "", 10, 30);
+		g.setColor(Color.WHITE);
+		g.setFont(myFont.deriveFont(Font.BOLD, 40f));
+		g.drawString(currentRun+"M", 10, 40);
+
+		Color silver = new Color(232, 232, 232);
+		g.setColor(silver);
+		g.setFont(myFont.deriveFont(Font.BOLD, 30f));
+		g.drawString("BEST: "+longestRun+"M", 10, 70);
+
+		Color gold = new Color(255, 255, 26);
+		g.setColor(gold);
+		g.setFont(myFont.deriveFont(Font.BOLD, 25f));
+		g.drawString(currentCoins+"", 10, 95);
 	}
 
 	public void checkRun() {
@@ -283,6 +303,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	}
 	
     public void move(){
+		if(isGameOver) {
+			screen = "game over";
+			return;
+		}
 		backgroundX += dx;
 		reversebackgroundX += dx;
 		if(backgroundX <= -WIDTH) backgroundX = WIDTH;
@@ -340,13 +364,13 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		removeScientists();
 
 		if(barry.collidesWith(zapper)) {
-			screen = "game over";
+			isGameOver = true;
 		}
 		for(Missile missile: missiles) {
 			if(missile.isFiring()) {
 				if(barry.intersects(missile)) {
 					System.out.println("barry tumbles");
-					screen = "game over";
+					isGameOver = true;
 				}
 			}
 		}
@@ -379,7 +403,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 			barry.draw(g);
 
-			g.setColor(Color.white);
 			drawScores(g);
 		}
 		else if(screen.equals("game over")) {

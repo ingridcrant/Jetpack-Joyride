@@ -74,12 +74,12 @@ public class Missile extends Rectangle {
             else {
                 dx = JetpackJoyridePanel.dx+MISSILESPEED;
             }
-            translate(dx, 0);
             x += dx;
         }
         if(targeting) {
             y = (int) JetpackJoyridePanel.barry.getY();
         }
+        setLocation(x, y);
     }
 
     public void fire() {
@@ -89,7 +89,7 @@ public class Missile extends Rectangle {
         else {
             x = 0 - width;
         }
-
+        setBounds(x, y, width, height);
         warning = false;
         targeting = false;
         firing = true;
