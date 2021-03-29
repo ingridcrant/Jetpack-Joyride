@@ -15,6 +15,7 @@ public class Barry extends Rectangle {
 
     private boolean RISING, FALLING, WALKING;
     private static int maxWalkingPoseCount = 4;
+    private static boolean isMoving = true;
     private int walkingPoseCount = 0;
 
     private int WIDTH, HEIGHT;
@@ -57,6 +58,9 @@ public class Barry extends Rectangle {
             RISING = false; FALLING = false; WALKING = true;
         }
         setBounds(X, Y, getImage().getWidth(), getImage().getHeight());
+    }
+    public static void stopMoving() {
+        isMoving = false;
     }
 
     public boolean collidesWith(Zapper zapper) {
@@ -117,7 +121,9 @@ public class Barry extends Rectangle {
 
     public void draw(Graphics g) {
         if(WALKING) {
-            walkingPoseCount++;
+            if(isMoving) {
+                walkingPoseCount++;
+            }
             if(walkingPoseCount > maxWalkingPoseCount/2) {
                 setBounds(X, Y, barryWalking1.getWidth(null), barryWalking1.getHeight(null));
                 g.drawImage(barryWalking1, X, Y, null);
