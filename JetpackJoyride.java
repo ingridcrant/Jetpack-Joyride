@@ -428,6 +428,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	
 	public void	keyPressed(KeyEvent e) {
 		if (screen.equals("start") && e.getKeyCode() == KeyEvent.VK_SPACE) {
+			SoundPlayer.playSoundEffect(SoundPlayer.background, true);
             screen = "game";
         }
 		allKeys[e.getKeyCode()] = true;
