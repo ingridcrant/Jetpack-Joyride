@@ -372,7 +372,12 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		Color gold = new Color(255, 255, 26);
 		g.setColor(gold);
 		g.setFont(myFont.deriveFont(Font.BOLD, 50f));
-		g.drawString(longestRunInfo, WIDTH/2 + 50, HEIGHT/2 - 150);
+		if(longestRunInfo.split(": ")[0].length() > 8) { // if the top scoring player has more than 8 letters in their name
+			g.drawString(longestRunInfo.split(": ")[0].substring(0, 7) + ": " + longestRunInfo.split(": ")[1], WIDTH/2 + 50, HEIGHT/2 - 150); // only draws the first 8 letters
+		}
+		else {
+			g.drawString(longestRunInfo, WIDTH/2 + 50, HEIGHT/2 - 150);
+		}
 	}
 
 	public boolean newLongestRun() {
