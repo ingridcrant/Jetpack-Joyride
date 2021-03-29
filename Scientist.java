@@ -97,8 +97,10 @@ public class Scientist extends Rectangle {
         isMoving = false;
     }
     public void draw(Graphics g) {
-        if(walking && isMoving) {
-            walkingPoseCount++;
+        if(walking) {
+            if(isMoving) {
+                walkingPoseCount++;
+            }
             if(walkingPoseCount > maxWalkingPoseCount/2) {
                 g.drawImage(scientistWalking1, x, y, null);
             }

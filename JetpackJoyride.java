@@ -410,6 +410,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			if(screen.equals("game over")) {
 				Scientist.stopMoving();
 				Coin.stopRotating();
+				Barry.stopMoving();
 				Color transparentBlack = new Color(0, 0, 0, 160);
 				g.setColor(transparentBlack);
 				g.fillRect(0, 0, WIDTH, HEIGHT);
