@@ -62,10 +62,12 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	private int currentRun;
 	private int longestRun;
+	private String longestRunInfo;
 
 	private String screen = "start";
-	private boolean isGameOver = false;
+	private static boolean isGameOver = false;
 	private Image startScreen;
+	private static boolean newLongestRunPrompted = false;
 
 	// Coin.GAP
 	private final Coin[] COINFormation = {new Coin(Coin.GAP,0), new Coin(Coin.GAP*2,0), new Coin(Coin.GAP*3,0),
@@ -161,10 +163,11 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		scientists = new ArrayList<Scientist>();
 		missiles = new ArrayList<Missile>();
 		
-		currentCoins = getScore("Coins.txt");
+		currentCoins = getCoins();
 
 		currentRun = 0;
-		longestRun = getScore("LongestRun.txt");
+		longestRun = Integer.parseInt((getLongestRun().split(": "))[1]);
+		longestRunInfo = getLongestRun();
 
 		startScreen = new ImageIcon("Images/start_screen.png").getImage();
 
@@ -184,8 +187,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
         return null;
     }
 
-	public Integer getScore(String fileName) {
-		File file = new File(fileName);
+	public Integer getCoins() {
+		File file = new File("Coins.txt");
 
 		try {
 			if(file.length() == 0) return 0;
@@ -200,8 +203,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			return 0;
 		}
 	}
-	public void setScore(int score, String fileName) {
-		File file = new File(fileName);
+	public void setCoins() {
+		File file = new File("Coins.txt");
 		if(!file.exists()) {
 			try {
 				file.createNewFile();
@@ -210,11 +213,48 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		try {
 			FileWriter myWriter = new FileWriter(file);
-			myWriter.write(String.valueOf(score));
+			myWriter.write(String.valueOf(currentCoins));
 			myWriter.close();
 		  } catch (IOException e) {
 			e.printStackTrace();
 		  }
+	}
+
+	public String getLongestRun() {
+		File file = new File("LongestRun.txt");
+
+		try {
+			if(file.length() == 0) return "nobody: 0";
+			else {
+				Scanner myReader = new Scanner(file);
+				String line = myReader.nextLine(); // line is the form name: score
+				myReader.close();
+				return line;
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return "nobody: 0";
+		}
+	}
+	public void setLongestRun() {
+		System.out.println("beginning of setlongest");
+		File file = new File("LongestRun.txt");
+		if(!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {}
+		}
+		System.out.println("created file");
+
+		try {
+			FileWriter myWriter = new FileWriter(file);
+			String name = JOptionPane.showInputDialog("You set the longest run! What is your name?");
+			myWriter.write(name + ": " + String.valueOf(currentRun));
+			myWriter.close();
+			System.out.println("write to file");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
  	// Main Game Loop
@@ -321,11 +361,16 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	public void drawLeaderBoard(Graphics g) {
 		g.setColor(Color.GRAY);
-		g.fillRect(WIDTH/2, HEIGHT/2 - 300, 430, 360);
+		g.fillRect(WIDTH/2, HEIGHT/2 - 300, 430, 260);
 
 		g.setColor(Color.WHITE);
 		g.setFont(myFont.deriveFont(Font.BOLD, 30f));
-		g.drawString("LEADERBOARD:", WIDTH/2 + 50, HEIGHT/2 - 250);
+		g.drawString("HIGH SCORE:", WIDTH/2 + 50, HEIGHT/2 - 250);
+
+		Color gold = new Color(255, 255, 26);
+		g.setColor(gold);
+		g.setFont(myFont.deriveFont(Font.BOLD, 50f));
+		g.drawString(longestRunInfo, WIDTH/2 + 50, HEIGHT/2 - 150);
 	}
 
 	public boolean newLongestRun() {
@@ -449,15 +494,17 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				g.fillRect(0, 0, WIDTH, HEIGHT);
 
 				drawFinalScores(g);
-				drawLeaderBoard(g);
 
-				setScore(currentCoins, "Coins.txt");
-
-				if(newLongestRun()) {
-					setScore(currentRun, "LongestRun.txt");
+				setCoins();
+				System.out.println("in game over ");
+				if(newLongestRun() && !newLongestRunPrompted) {
+					System.out.println("in set loop");
+					newLongestRunPrompted = true;
+					setLongestRun();
 				}
-				else {
-					setScore(longestRun, "LongestRun.txt");
+
+				if(!longestRunInfo.equals("nobody: 0")) {
+					drawLeaderBoard(g);
 				}
 			}
 		}
