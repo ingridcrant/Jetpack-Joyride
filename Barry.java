@@ -7,13 +7,13 @@ public class Barry extends Rectangle {
     private static final BufferedImage barryWalking2 = JetpackJoyridePanel.loadBuffImg("barry2.png");
     private static final BufferedImage barryRising = JetpackJoyridePanel.loadBuffImg("barry_rising.png");
     private static final BufferedImage barryFalling = JetpackJoyridePanel.loadBuffImg("barry_falling.png");
-    private static final BufferedImage barryBackwards = JetpackJoyridePanel.loadBuffImg("barry_backwards.png");
     private static final BufferedImage barryForwards = JetpackJoyridePanel.loadBuffImg("barry_forwards.png");
     private static final BufferedImage barryDead = JetpackJoyridePanel.loadBuffImg("barry_dead.png");
 
     private final int BLANK = 0x00000000;
 
     private boolean RISING, FALLING, WALKING;
+    public boolean TUMBLING = false, DYING = false;
     private static int maxWalkingPoseCount = 4;
     private static boolean isMoving = true;
     private int walkingPoseCount = 0;
@@ -21,7 +21,12 @@ public class Barry extends Rectangle {
     private int WIDTH, HEIGHT;
     private static final int TOPBORDERHEIGHT = 120, BOTTOMBORDERHEIGHT = 100;
     private static final int X = JetpackJoyridePanel.WIDTH/3;
-    private int Y, risingDy = 20, fallingDy = 25;
+    private int Y;
+    private double risingYSpeed = 20, fallingYSpeed = 25;
+
+    public static double GRAVITY = 0.99;
+    public boolean hitFloor = false;
+    private int barryRotationAngle = 270;
 
     public Barry(String picName) {
         super();
@@ -34,17 +39,20 @@ public class Barry extends Rectangle {
         Y = JetpackJoyridePanel.WIDTH-HEIGHT-21;
         setBounds(X, Y, WIDTH, HEIGHT);
     }
-
+    public void accelerate(double accelerationX, double accelerationY) {
+        JetpackJoyridePanel.speedX += accelerationX;
+        fallingYSpeed += accelerationY;
+    }
     public void move(boolean spacePressed) {
         if(spacePressed) {
             RISING = true; FALLING = false; WALKING = false;
-            translate(0,-risingDy);
-            Y -= risingDy;
+            translate(0, (int) -risingYSpeed);
+            Y -= risingYSpeed;
         }
         else {
             RISING = false; FALLING = true; WALKING = false;
-            translate(0,fallingDy);
-            Y += fallingDy;
+            translate(0, (int) fallingYSpeed);
+            Y += fallingYSpeed;
         }
 
         if(Y > JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT) {
@@ -62,7 +70,23 @@ public class Barry extends Rectangle {
     public static void stopMoving() {
         isMoving = false;
     }
-
+    public void dying() {
+        RISING = false; FALLING = false; WALKING = false; TUMBLING = true;
+        Y += fallingYSpeed;
+        accelerate(0, GRAVITY); // gravity accelerates the object downwards each tick
+        if(Y >= JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT) {  
+            TUMBLING = false;
+            DYING = true;
+            Y = JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT;
+            setLocation(X, Y);
+            hitFloor = true;
+        }
+        fallingYSpeed = Math.ceil(fallingYSpeed);
+        setBounds(X, Y, getImage().getWidth(), getImage().getHeight());
+    }
+    public int getDyingYSpeed() {
+        return (int) fallingYSpeed;
+    }
     public boolean collidesWith(Zapper zapper) {
         // Check if the boundires intersect
         if (intersects(zapper.getRect())) {
@@ -114,11 +138,14 @@ public class Barry extends Rectangle {
             }
         } else if (RISING) {
             return barryRising;
-        } else {
+        } else if (FALLING) {
             return barryFalling;
+        } else if (TUMBLING) {
+            return barryForwards;
+        } else {
+            return barryDead;
         }
     }
-
     public void draw(Graphics g) {
         if(WALKING) {
             if(isMoving) {
@@ -141,6 +168,20 @@ public class Barry extends Rectangle {
         } else if (FALLING) {
             setBounds(X, Y, barryFalling.getWidth(null), barryWalking2.getHeight(null));
             g.drawImage(barryFalling, X, Y, null);
+        } else if(TUMBLING) {
+            AffineTransform identity = new AffineTransform();
+
+            Graphics2D g2d = (Graphics2D)g;
+            AffineTransform trans = new AffineTransform();
+            trans.setTransform(identity);
+            trans.translate(X, Y);
+            trans.rotate(Math.toRadians(barryRotationAngle));
+            g2d.drawImage(getImage(), trans, null);
+
+            barryRotationAngle += 10;
+            barryRotationAngle = barryRotationAngle % 360;
+        } else {
+            g.drawImage(barryDead, X, Y, null);
         }
     }
 }

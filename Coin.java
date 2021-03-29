@@ -42,7 +42,7 @@ public class Coin extends Rectangle {
         if(isRotating) {
             currentSprite = (currentSprite+1)%NUMSPRITES;
         }
-        translateCoin(JetpackJoyridePanel.dx, 0);
+        translateCoin(JetpackJoyridePanel.speedX, 0);
     }
     public void draw(Graphics g) {
         g.drawImage(sprites[currentSprite], X, Y, null);

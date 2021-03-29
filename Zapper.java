@@ -46,7 +46,7 @@ public class Zapper {
     }
 
     public void move() {
-        bounds.translate(JetpackJoyridePanel.dx, 0);
+        bounds.translate(JetpackJoyridePanel.speedX, 0);
     }
 
     public void draw(Graphics g) {

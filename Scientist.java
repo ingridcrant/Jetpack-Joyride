@@ -55,14 +55,14 @@ public class Scientist extends Rectangle {
         int dx;
         if(walking) {
             if(dir == LEFT) {
-                dx = JetpackJoyridePanel.dx-speed;
+                dx = JetpackJoyridePanel.speedX-speed;
             }
             else {
-                dx = JetpackJoyridePanel.dx+speed;
+                dx = JetpackJoyridePanel.speedX+speed;
             }
         }
         else {
-            dx = JetpackJoyridePanel.dx;
+            dx = JetpackJoyridePanel.speedX;
         }
         translate(dx, 0);
         x += dx;
