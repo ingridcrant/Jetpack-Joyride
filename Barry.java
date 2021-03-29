@@ -7,6 +7,10 @@ public class Barry extends Rectangle {
     private static final BufferedImage barryWalking2 = JetpackJoyridePanel.loadBuffImg("barry2.png");
     private static final BufferedImage barryRising = JetpackJoyridePanel.loadBuffImg("barry_rising.png");
     private static final BufferedImage barryFalling = JetpackJoyridePanel.loadBuffImg("barry_falling.png");
+    private static final BufferedImage barryBackwards = JetpackJoyridePanel.loadBuffImg("barry_backwards.png");
+    private static final BufferedImage barryForwards = JetpackJoyridePanel.loadBuffImg("barry_forwards.png");
+    private static final BufferedImage barryDead = JetpackJoyridePanel.loadBuffImg("barry_dead.png");
+
     private final int BLANK = 0x00000000;
 
     private boolean RISING, FALLING, WALKING;
@@ -41,6 +45,7 @@ public class Barry extends Rectangle {
             translate(0,fallingDy);
             Y += fallingDy;
         }
+
         if(Y > JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT) {
             Y = JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT;
             setLocation(X, JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT);
@@ -79,7 +84,7 @@ public class Barry extends Rectangle {
         }
         return false;
     }
-
+    
     protected Rectangle getCollision(Rectangle rect2) {
         Area a1 = new Area(this);
         Area a2 = new Area(rect2);

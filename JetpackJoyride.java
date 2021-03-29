@@ -281,31 +281,63 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	public void drawScores(Graphics g) {
 		g.setColor(Color.WHITE);
 		g.setFont(myFont.deriveFont(Font.BOLD, 40f));
-		g.drawString(currentRun+"M", 10, 40);
+		g.drawString(currentRun + "M", 10, 40);
 
 		Color silver = new Color(232, 232, 232);
 		g.setColor(silver);
 		g.setFont(myFont.deriveFont(Font.BOLD, 30f));
-		g.drawString("BEST: "+longestRun+"M", 10, 70);
+		g.drawString("BEST: " + longestRun + "M", 10, 70);
 
 		Color gold = new Color(255, 255, 26);
 		g.setColor(gold);
 		g.setFont(myFont.deriveFont(Font.BOLD, 25f));
-		g.drawString(currentCoins+"", 10, 95);
+		g.drawString(currentCoins + "", 10, 95);
 	}
 
-	public void checkRun() {
-		if(currentRun > longestRun) {
-			longestRun = currentRun;
+	public void drawFinalScores(Graphics g) {
+		g.setColor(Color.WHITE);
+		g.setFont(myFont.deriveFont(Font.BOLD, 50f));
+		g.drawString("YOU FLEW", WIDTH/2 - 430, HEIGHT/2 - 250);
+
+		Color gold = new Color(255, 255, 26);
+		g.setColor(gold);
+		g.setFont(myFont.deriveFont(Font.BOLD, 100f));
+		g.drawString(currentRun + "M", WIDTH/2 - 430, HEIGHT/2 - 150);
+
+		if(newLongestRun()) {
+			g.setColor(Color.BLUE);
+			g.setFont(myFont.deriveFont(Font.BOLD, 30f));
+			g.drawString("NEW BEST", WIDTH/2 - 180, HEIGHT/2 - 250);
 		}
+
+		g.setColor(Color.WHITE);
+		g.setFont(myFont.deriveFont(Font.BOLD, 50f));
+		g.drawString("AND COLLECTED", WIDTH/2 - 430, HEIGHT/2 - 90);
+
+		g.setColor(gold);
+		g.setFont(myFont.deriveFont(Font.BOLD, 40f));
+		g.drawString(currentCoins + " COINS", WIDTH/2 - 430, HEIGHT/2 - 40);
+	}
+
+	public void drawLeaderBoard(Graphics g) {
+		g.setColor(Color.GRAY);
+		g.fillRect(WIDTH/2, HEIGHT/2 - 300, 430, 360);
+
+		g.setColor(Color.WHITE);
+		g.setFont(myFont.deriveFont(Font.BOLD, 30f));
+		g.drawString("LEADERBOARD:", WIDTH/2 + 50, HEIGHT/2 - 250);
+	}
+
+	public boolean newLongestRun() {
+		if(currentRun > longestRun) {
+			return true;
+		}
+		return false;
 	}
 	
     public void move(){
 		if(isGameOver) {
 			screen = "game over";
-			checkRun();
-			setScore(currentCoins, "Coins.txt");
-			setScore(longestRun, "LongestRun.txt");
 			return;
 		}
 		backgroundX += dx;
@@ -410,9 +442,23 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			if(screen.equals("game over")) {
 				Scientist.stopMoving();
 				Coin.stopRotating();
-				Color transparentBlack = new Color(0, 0, 0, 160);
+				// Barry.stopMoving();
+
+				Color transparentBlack = new Color(0, 0, 0, 190);
 				g.setColor(transparentBlack);
 				g.fillRect(0, 0, WIDTH, HEIGHT);
+
+				drawFinalScores(g);
+				drawLeaderBoard(g);
+
+				setScore(currentCoins, "Coins.txt");
+
+				if(newLongestRun()) {
+					setScore(currentRun, "LongestRun.txt");
+				}
+				else {
+					setScore(longestRun, "LongestRun.txt");
+				}
 			}
 		}
 	}
