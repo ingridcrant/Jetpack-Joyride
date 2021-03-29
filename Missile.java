@@ -69,10 +69,10 @@ public class Missile extends Rectangle {
         if(firing) {
             int dx;
             if(dir == LEFT) {
-                dx = JetpackJoyridePanel.dx-MISSILESPEED;
+                dx = JetpackJoyridePanel.speedX-MISSILESPEED;
             }
             else {
-                dx = JetpackJoyridePanel.dx+MISSILESPEED;
+                dx = JetpackJoyridePanel.speedX+MISSILESPEED;
             }
             x += dx;
         }

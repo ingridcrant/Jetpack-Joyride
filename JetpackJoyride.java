@@ -44,7 +44,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
     public static final int WIDTH=1000, HEIGHT=750;
     private static final Image background = new ImageIcon("Images/background.png").getImage();
 	private static int backgroundX = 0, backgroundY = 0, reversebackgroundX = 1000, reversebackgroundY = 0;
-	public static final int dx = -20;
+	public static int speedX = -20;
 
 	private static final int LEFT = 0, RIGHT = 1;
 
@@ -54,6 +54,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private Random rand = new Random();
 
 	public static Barry barry;
+	private boolean barryFinishedDying = false;
+
 	private Zapper zapper;
 	private ArrayList<Scientist> scientists;
 	private ArrayList<Missile> missiles;
@@ -382,11 +384,18 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	
     public void move(){
 		if(isGameOver) {
-			screen = "game over";
-			return;
+			if(!barry.hitFloor) {
+				barry.dying();
+			} else {
+				speedX *= 0.9999;
+				if(speedX == 0) {
+					screen = "game over";
+					return;
+				}
+			}
 		}
-		backgroundX += dx;
-		reversebackgroundX += dx;
+		backgroundX += speedX;
+		reversebackgroundX += speedX;
 		if(backgroundX <= -WIDTH) backgroundX = WIDTH;
 		if(reversebackgroundX <= -WIDTH) reversebackgroundX = WIDTH;
 
@@ -417,7 +426,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 		removeMissiles();
 
-		barry.move(allKeys[KeyEvent.VK_SPACE]);
+		if(!isGameOver) {
+			barry.move(allKeys[KeyEvent.VK_SPACE]);
+		}
 
 		addScientists();
 		for(Scientist scientist : scientists) {
