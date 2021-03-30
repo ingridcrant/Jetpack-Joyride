@@ -5,7 +5,7 @@ public class Missile extends Rectangle {
     private static final int LEFT = 0, RIGHT = 1;
     private static final int MAXFRAMESBEFOREFIRING = 15;
     private static final int MAXFRAMESBEFOREWARNING = 10;
-    private static final int MISSILESPEED = 50;
+    // private static final int MISSILESPEED = 50;
 
     private int x, y;
     private int width, height;
@@ -69,10 +69,10 @@ public class Missile extends Rectangle {
         if(firing) {
             int dx;
             if(dir == LEFT) {
-                dx = JetpackJoyridePanel.speedX-MISSILESPEED;
+                dx = 3*JetpackJoyridePanel.speedX;
             }
             else {
-                dx = JetpackJoyridePanel.speedX+MISSILESPEED;
+                dx = (-2)*JetpackJoyridePanel.speedX;
             }
             x += dx;
         }

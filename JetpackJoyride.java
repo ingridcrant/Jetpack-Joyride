@@ -465,6 +465,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 
 		currentRun++;
+		if(currentRun % 100 == 0) {
+			speedX -= 3;
+		}
     }
     
 	@Override
