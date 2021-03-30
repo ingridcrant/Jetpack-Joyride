@@ -42,8 +42,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	 */
     private static Timer myTimer;
     public static final int WIDTH=1000, HEIGHT=750;
-    private static final Image background = new ImageIcon("Images/background.png").getImage();
-	private static int backgroundX = 0, backgroundY = 0, reversebackgroundX = 1000, reversebackgroundY = 0;
+	private static final Image background = new ImageIcon("Images/background.png").getImage();
+	private static int backgroundX = 0, backgroundY = 0, reverseBackgroundX = WIDTH, reverseBackgroundY = 0;
 	public static int speedX = -20;
 
 	private static final int LEFT = 0, RIGHT = 1;
@@ -54,7 +54,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private Random rand = new Random();
 
 	public static Barry barry;
-	private boolean barryFinishedDying = false;
 
 	private Zapper zapper;
 	private ArrayList<Scientist> scientists;
@@ -239,21 +238,18 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 	}
 	public void setLongestRun() {
-		System.out.println("beginning of setlongest");
 		File file = new File("LongestRun.txt");
 		if(!file.exists()) {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {}
 		}
-		System.out.println("created file");
 
 		try {
 			FileWriter myWriter = new FileWriter(file);
 			String name = JOptionPane.showInputDialog("You set the longest run! What is your name?");
 			myWriter.write(name + ": " + String.valueOf(currentRun));
 			myWriter.close();
-			System.out.println("write to file");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -400,14 +396,14 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			}
 		}
 		backgroundX += speedX;
-		reversebackgroundX += speedX;
-		if(backgroundX <= -WIDTH) backgroundX = WIDTH;
-		if(reversebackgroundX <= -WIDTH) reversebackgroundX = WIDTH;
+		reverseBackgroundX += speedX;
+		if(backgroundX <= -WIDTH) backgroundX = reverseBackgroundX+WIDTH;
+		if(reverseBackgroundX <= -WIDTH) reverseBackgroundX = backgroundX + WIDTH;
 
 		if(coins.isEmpty()) {
 			Coin[] randFormation = coinFormations[rand.nextInt(coinFormations.length)];
 			for(Coin coin: randFormation) {
-				Coin newCoin = new Coin((int) coin.getX()+700, (int) coin.getY()+200);
+				Coin newCoin = new Coin((int) coin.getX()+WIDTH+20, (int) coin.getY()+200);
 				coins.add(newCoin);
 			}
 		}
@@ -478,7 +474,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 		else if(screen.equals("game") || screen.equals("game over")) {
 			g.drawImage(background, backgroundX, backgroundY, null);
-			g.drawImage(background, reversebackgroundX+WIDTH, reversebackgroundY, -WIDTH, HEIGHT, null);
+			g.drawImage(background, reverseBackgroundX+WIDTH, reverseBackgroundY, -WIDTH, HEIGHT, null);
 
 			for(Coin coin: coins) {
 				coin.draw(g);
@@ -512,13 +508,11 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				drawFinalScores(g);
 
 				setCoins();
-				System.out.println("in game over ");
 				if(newLongestRun() && !newLongestRunPrompted) {
-					System.out.println("in set loop");
 					newLongestRunPrompted = true;
 					setLongestRun();
+					longestRunInfo = getLongestRun();
 				}
-
 				if(!longestRunInfo.equals("nobody: 0")) {
 					drawLeaderBoard(g);
 				}
