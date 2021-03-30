@@ -10,6 +10,7 @@ public class Missile extends Rectangle {
     private int x, y;
     private int width, height;
     private int dir;
+    private static final int GAPFROMEDGE = 5;
 
     private boolean warning, targeting, firing;
 
@@ -31,12 +32,12 @@ public class Missile extends Rectangle {
         height = missilePic.getHeight();
 
         if(dir == LEFT) {
-            x = JetpackJoyridePanel.WIDTH - width;
+            x = JetpackJoyridePanel.WIDTH - width - GAPFROMEDGE;
         }
         else {
             missilePic = JetpackJoyridePanel.flipImage(missilePic);
             targetingPic = JetpackJoyridePanel.flipImage(targetingPic);
-            x = 0;
+            x = GAPFROMEDGE;
         }
 
         y = (int) JetpackJoyridePanel.barry.getY();
@@ -96,13 +97,13 @@ public class Missile extends Rectangle {
     }
     public void warn() {
         warning = true;
-        targeting = true;
+        targeting = false;
         firing = false;
     }
 
     public void draw(Graphics g) {
         if(warning) {
-            g.drawImage(warningPic, x, Math.abs(y - targetingPic.getWidth(null) - 10), null);
+            g.drawImage(warningPic, x - warningPic.getWidth()/2 + targetingPic.getWidth()/2, y - warningPic.getHeight()/2 + targetingPic.getHeight()/2, null);
         }
         if(targeting) {
             g.drawImage(targetingPic, x, y, null);

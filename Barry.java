@@ -18,7 +18,7 @@ public class Barry extends Rectangle {
     private final int BLANK = 0x00000000;
 
     private boolean RISING, FALLING, WALKING;
-    private boolean shield;
+    private boolean shield, hit;
     public boolean TUMBLING = false, DYING = false;
     private static int maxWalkingPoseCount = 4;
     private static boolean isMoving = true;
@@ -45,7 +45,6 @@ public class Barry extends Rectangle {
         Y = JetpackJoyridePanel.WIDTH-HEIGHT-21;
         setBounds(X, Y, WIDTH, HEIGHT);
     }
-
     public void activateShield() {
         shield = true;
     }
@@ -55,7 +54,15 @@ public class Barry extends Rectangle {
     public boolean hasShield() {
         return shield;
     }
-
+    public boolean isHit() {
+        return hit;
+    }
+    public void resetHit() {
+        hit = false;
+    }
+    public void gotHit() {
+        hit = true;
+    }
     public void accelerate(double accelerationX, double accelerationY) {
         JetpackJoyridePanel.speedX += accelerationX;
         fallingYSpeed += accelerationY;
@@ -194,7 +201,7 @@ public class Barry extends Rectangle {
             if(walkingPoseCount > maxWalkingPoseCount/2) {
                 setBounds(X, Y, barryWalking1.getWidth(null), barryWalking1.getHeight(null));
                 if(shield) {
-                    g.drawImage(barryWalkingShield1, X, Y, null);
+                    g.drawImage(barryWalkingShield1, X - barryWalkingShield1.getWidth()/2 + (int)getWidth()/2, Y - barryWalkingShield1.getHeight()/2 + (int)getHeight()/2, null);
                 }
                 else {
                     g.drawImage(barryWalking1, X, Y, null);
@@ -203,7 +210,7 @@ public class Barry extends Rectangle {
             else {
                 setBounds(X, Y, barryWalking2.getWidth(null), barryWalking2.getHeight(null));
                 if(shield) {
-                    g.drawImage(barryWalkingShield2, X, Y, null);
+                    g.drawImage(barryWalkingShield2, X - barryWalkingShield2.getWidth()/2 + (int)getWidth()/2, Y - barryWalkingShield2.getHeight()/2 + (int)getHeight()/2, null);
                 }
                 else {
                     g.drawImage(barryWalking2, X, Y, null);
@@ -215,7 +222,7 @@ public class Barry extends Rectangle {
         } else if (RISING) {
             setBounds(X, Y, barryRising.getWidth(null), barryWalking2.getHeight(null));
             if(shield) {
-                g.drawImage(barryRisingShield, X, Y, null);
+                g.drawImage(barryRisingShield, X - barryRisingShield.getWidth()/2 + (int)getWidth()/2, Y - barryRisingShield.getHeight()/2 + (int)getHeight()/2, null);
             }
             else {
                 g.drawImage(barryRising, X, Y, null);
@@ -223,7 +230,7 @@ public class Barry extends Rectangle {
         } else if (FALLING) {
             setBounds(X, Y, barryFalling.getWidth(null), barryWalking2.getHeight(null));
             if(shield) {
-                g.drawImage(barryFallingShield, X, Y, null);
+                g.drawImage(barryFallingShield, X - barryFallingShield.getWidth()/2 + (int)getWidth()/2, Y - barryFallingShield.getHeight()/2 + (int)getHeight()/2, null);
             }
             else {
                 g.drawImage(barryFalling, X, Y, null);
