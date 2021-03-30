@@ -10,9 +10,15 @@ public class Barry extends Rectangle {
     private static final BufferedImage barryForwards = JetpackJoyridePanel.loadBuffImg("barry_forwards.png");
     private static final BufferedImage barryDead = JetpackJoyridePanel.loadBuffImg("barry_dead.png");
 
+    private static final BufferedImage barryWalkingShield1 = JetpackJoyridePanel.loadBuffImg("barry_shield.png");
+    private static final BufferedImage barryWalkingShield2 = JetpackJoyridePanel.loadBuffImg("barry2_shield.png");
+    private static final BufferedImage barryRisingShield = JetpackJoyridePanel.loadBuffImg("barry_rising_shield.png");
+    private static final BufferedImage barryFallingShield = JetpackJoyridePanel.loadBuffImg("barry_falling_shield.png");
+
     private final int BLANK = 0x00000000;
 
     private boolean RISING, FALLING, WALKING;
+    private boolean shield;
     public boolean TUMBLING = false, DYING = false;
     private static int maxWalkingPoseCount = 4;
     private static boolean isMoving = true;
@@ -39,10 +45,22 @@ public class Barry extends Rectangle {
         Y = JetpackJoyridePanel.WIDTH-HEIGHT-21;
         setBounds(X, Y, WIDTH, HEIGHT);
     }
+
+    public void activateShield() {
+        shield = true;
+    }
+    public void deactivateShield() {
+        shield = false;
+    }
+    public boolean hasShield() {
+        return shield;
+    }
+
     public void accelerate(double accelerationX, double accelerationY) {
         JetpackJoyridePanel.speedX += accelerationX;
         fallingYSpeed += accelerationY;
     }
+
     public void move(boolean spacePressed) {
         if(spacePressed) {
             RISING = true; FALLING = false; WALKING = false;
@@ -84,9 +102,11 @@ public class Barry extends Rectangle {
         fallingYSpeed = Math.ceil(fallingYSpeed);
         setBounds(X, Y, getImage().getWidth(), getImage().getHeight());
     }
+
     public int getDyingYSpeed() {
         return (int) fallingYSpeed;
     }
+
     public boolean collidesWith(Zapper zapper) {
         // Check if the boundires intersect
         if (intersects(zapper.getRect())) {
@@ -131,15 +151,35 @@ public class Barry extends Rectangle {
     public BufferedImage getImage() {
         if(WALKING) {
             if(walkingPoseCount > maxWalkingPoseCount/2) {
-                return barryWalking1;
+                if(shield) {
+                    return barryWalkingShield1;
+                }
+                else {
+                    return barryWalking1;
+                }
             }
             else {
-                return barryWalking2;
+                if(shield) {
+                    return barryWalkingShield2;
+                }
+                else {
+                    return barryWalking2;
+                }
             }
         } else if (RISING) {
-            return barryRising;
+            if(shield) {
+                return barryRisingShield;
+            }
+            else {
+                return barryRising;
+            }
         } else if (FALLING) {
-            return barryFalling;
+            if(shield) {
+                return barryFallingShield;
+            }
+            else {
+                return barryFalling;
+            }
         } else if (TUMBLING) {
             return barryForwards;
         } else {
@@ -153,21 +193,41 @@ public class Barry extends Rectangle {
             }
             if(walkingPoseCount > maxWalkingPoseCount/2) {
                 setBounds(X, Y, barryWalking1.getWidth(null), barryWalking1.getHeight(null));
-                g.drawImage(barryWalking1, X, Y, null);
+                if(shield) {
+                    g.drawImage(barryWalkingShield1, X, Y, null);
+                }
+                else {
+                    g.drawImage(barryWalking1, X, Y, null);
+                }
             }
             else {
                 setBounds(X, Y, barryWalking2.getWidth(null), barryWalking2.getHeight(null));
-                g.drawImage(barryWalking2, X, Y, null);
+                if(shield) {
+                    g.drawImage(barryWalkingShield2, X, Y, null);
+                }
+                else {
+                    g.drawImage(barryWalking2, X, Y, null);
+                }
             }
             if(walkingPoseCount > maxWalkingPoseCount) {
                 walkingPoseCount = 0;
             }
         } else if (RISING) {
             setBounds(X, Y, barryRising.getWidth(null), barryWalking2.getHeight(null));
-            g.drawImage(barryRising, X, Y, null);
+            if(shield) {
+                g.drawImage(barryRisingShield, X, Y, null);
+            }
+            else {
+                g.drawImage(barryRising, X, Y, null);
+            }
         } else if (FALLING) {
             setBounds(X, Y, barryFalling.getWidth(null), barryWalking2.getHeight(null));
-            g.drawImage(barryFalling, X, Y, null);
+            if(shield) {
+                g.drawImage(barryFallingShield, X, Y, null);
+            }
+            else {
+                g.drawImage(barryFalling, X, Y, null);
+            }
         } else if(TUMBLING) {
             AffineTransform identity = new AffineTransform();
 

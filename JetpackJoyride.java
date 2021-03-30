@@ -51,6 +51,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private static Font myFont;
 
 	private static boolean[] allKeys;
+	private Point mouse = new Point();
 	private Random rand = new Random();
 
 	public static Barry barry;
@@ -65,10 +66,14 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private int longestRun;
 	private String longestRunInfo;
 
+	private int numOfShields;
+
 	private String screen = "start";
 	private static boolean isGameOver = false;
 	private Image startScreen;
 	private static boolean newLongestRunPrompted = false;
+	private static String buyShieldsMessage = "";
+	private static int buyShieldMessageFrameCount = 0;
 
 	// Coin.GAP
 	private final Coin[] COINFormation = {new Coin(Coin.GAP,0), new Coin(Coin.GAP*2,0), new Coin(Coin.GAP*3,0),
@@ -170,6 +175,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		longestRun = Integer.parseInt((getLongestRun().split(": "))[1]);
 		longestRunInfo = getLongestRun();
 
+		numOfShields = getNumOfShields();
+
 		startScreen = new ImageIcon("Images/start_screen.png").getImage();
 
 		Timer myTimer = new Timer(100, this);
@@ -178,7 +185,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		myTimer.start();
  	}
 
-	public static BufferedImage loadBuffImg(String n) { 													// used to load BufferedImages
+	public static BufferedImage loadBuffImg(String n) {
         try {
             return ImageIO.read(new File("Images/" + n));
         }
@@ -255,6 +262,39 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 	}
 
+	public Integer getNumOfShields() {
+		File file = new File("NumOfShields.txt");
+
+		try {
+			if(file.length() == 0) return 0;
+			else {
+				Scanner myReader = new Scanner(file);
+				Integer num = Integer.parseInt(myReader.nextLine()); // line is the form name: score
+				myReader.close();
+				return num;
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	public void setNumOfShields() {
+		File file = new File("NumOfShields.txt");
+		if(!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {}
+		}
+
+		try {
+			FileWriter myWriter = new FileWriter(file);
+			myWriter.write(String.valueOf(numOfShields));
+			myWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
  	// Main Game Loop
 	@Override
 	public void actionPerformed(ActionEvent e){
@@ -321,6 +361,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		g.setFont(myFont.deriveFont(Font.BOLD, 40f));
 		g.drawString(currentRun + "M", 10, 40);
 
+		g.setFont(myFont.deriveFont(Font.BOLD, 20f));
+		g.drawString("NUMBER OF SHIELDS " + numOfShields, WIDTH - 200, 40);
+
 		Color silver = new Color(232, 232, 232);
 		g.setColor(silver);
 		g.setFont(myFont.deriveFont(Font.BOLD, 30f));
@@ -359,7 +402,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	public void drawLeaderBoard(Graphics g) {
 		g.setColor(Color.GRAY);
-		g.fillRect(WIDTH/2, HEIGHT/2 - 300, 430, 260);
+		g.fillRect(WIDTH/2, HEIGHT/2 - 300, 430, 140);
 
 		g.setColor(Color.WHITE);
 		g.setFont(myFont.deriveFont(Font.BOLD, 30f));
@@ -369,10 +412,22 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		g.setColor(gold);
 		g.setFont(myFont.deriveFont(Font.BOLD, 50f));
 		if(longestRunInfo.split(": ")[0].length() > 8) { // if the top scoring player has more than 8 letters in their name
-			g.drawString(longestRunInfo.split(": ")[0].substring(0, 7) + ": " + longestRunInfo.split(": ")[1], WIDTH/2 + 50, HEIGHT/2 - 150); // only draws the first 8 letters
+			g.drawString(longestRunInfo.split(": ")[0].substring(0, 7) + ": " + longestRunInfo.split(": ")[1], WIDTH/2 + 50, HEIGHT/2 - 195); // only draws the first 8 letters
 		}
 		else {
-			g.drawString(longestRunInfo, WIDTH/2 + 50, HEIGHT/2 - 150);
+			g.drawString(longestRunInfo, WIDTH/2 + 50, HEIGHT/2 - 195);
+		}
+	}
+
+	public void buyShield() {
+		if(currentCoins >= 1500) {
+			currentCoins -= 1500;
+			numOfShields++;
+			buyShieldsMessage = "You bought a shield! You now have "+numOfShields+" shields and "+currentCoins+" coins left.";
+			setNumOfShields();
+		}
+		else {
+			buyShieldsMessage = "Sorry, you don't have enough coins to buy a shield.";
 		}
 	}
 
@@ -454,12 +509,22 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		removeScientists();
 
 		if(barry.collidesWith(zapper)) {
-			isGameOver = true;
+			if(barry.hasShield()) {
+				barry.deactivateShield();
+			}
+			else {
+				isGameOver = true;
+			}
 		}
 		for(Missile missile: missiles) {
 			if(missile.isFiring()) {
 				if(barry.intersects(missile)) {
-					isGameOver = true;
+					if(barry.hasShield()) {
+						barry.deactivateShield();
+					}
+					else {
+						isGameOver = true;
+					}
 				}
 			}
 		}
@@ -511,6 +576,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				drawFinalScores(g);
 
 				setCoins();
+				
 				if(newLongestRun() && !newLongestRunPrompted) {
 					newLongestRunPrompted = true;
 					setLongestRun();
@@ -518,6 +584,28 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				}
 				if(!longestRunInfo.equals("nobody: 0")) {
 					drawLeaderBoard(g);
+				}
+
+				g.setColor(Color.BLUE);
+				g.fillRect(WIDTH/2 + 125, HEIGHT/2 - 130, 200, 80);
+
+				g.setColor(Color.WHITE);
+				g.setFont(myFont.deriveFont(Font.BOLD, 30f));
+				g.drawString("BUY SHIELDS", WIDTH/2 + 145, HEIGHT/2 - 80);
+
+				if(buyShieldMessageFrameCount > 0) {
+					buyShieldMessageFrameCount++;
+					if(buyShieldMessageFrameCount == 20) {
+						buyShieldMessageFrameCount = 0;
+						buyShieldsMessage = "";
+					}
+				}
+
+				if(buyShieldsMessage.contains("You bought")) {
+					g.setFont(myFont.deriveFont(Font.BOLD, 25f));
+					g.drawString(buyShieldsMessage, 120, HEIGHT/2 + 100);
+				} else {
+					g.drawString(buyShieldsMessage, 150, HEIGHT/2 + 100);
 				}
 			}
 		}
@@ -530,13 +618,28 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	public void	mouseClicked(MouseEvent e){}
 	public void	mouseEntered(MouseEvent e){}
 	public void	mouseExited(MouseEvent e){}
-	public void	mouseReleased(MouseEvent e){}
+	public void	mouseReleased(MouseEvent e){
+		if(screen == "game over") {
+			mouse = new Point(e.getX(),e.getY());
+			Rectangle buyShieldRect = new Rectangle(629, 250, 827-629, 327-250);
+			if(buyShieldRect.contains(mouse)) {
+				buyShieldMessageFrameCount++;
+				buyShield();
+			}
+			mouse = new Point();
+		}
+	}
 	
 	public void	keyPressed(KeyEvent e) {
 		if (screen.equals("start") && e.getKeyCode() == KeyEvent.VK_SPACE) {
 			SoundPlayer.playSoundEffect(SoundPlayer.background, true);
             screen = "game";
         }
+		if (screen.equals("game") && e.getKeyCode() == KeyEvent.VK_ENTER && numOfShields > 0 && !barry.hasShield()) {
+			barry.activateShield();
+			numOfShields--;
+		}
+
 		allKeys[e.getKeyCode()] = true;
 	}
 	public void	keyReleased(KeyEvent e){ 
