@@ -108,24 +108,54 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 									 new Coin(Coin.GAP*3, Coin.GAP), new Coin(Coin.GAP*4, Coin.GAP), new Coin(Coin.GAP*5, Coin.GAP), 
 									 new Coin(Coin.GAP*6, Coin.GAP), new Coin(Coin.GAP*7, Coin.GAP), new Coin(Coin.GAP, Coin.GAP*2), 
 									 new Coin(Coin.GAP*2, Coin.GAP*2), new Coin(Coin.GAP*3, Coin.GAP*2), new Coin(Coin.GAP*4, Coin.GAP*2), 
-									 new Coin(Coin.GAP*5, Coin.GAP*2), new Coin(Coin.GAP*6, Coin.GAP*2)
+									 new Coin(Coin.GAP*5, Coin.GAP*2), new Coin(Coin.GAP*6, Coin.GAP*2), // 1st clump
+
+									 new Coin(Coin.GAP*10, Coin.GAP*3), new Coin(Coin.GAP*11, Coin.GAP*3), new Coin(Coin.GAP*12, Coin.GAP*3), 
+		                             new Coin(Coin.GAP*13, Coin.GAP*3), new Coin(Coin.GAP*14, Coin.GAP*3), new Coin(Coin.GAP*15, Coin.GAP*3),
+		                             new Coin(Coin.GAP*9, Coin.GAP*4), new Coin(Coin.GAP*10, Coin.GAP*4), new Coin(Coin.GAP*11, Coin.GAP*4), 
+									 new Coin(Coin.GAP*12, Coin.GAP*4), new Coin(Coin.GAP*13, Coin.GAP*4), new Coin(Coin.GAP*14, Coin.GAP*4), 
+									 new Coin(Coin.GAP*15, Coin.GAP*4), new Coin(Coin.GAP*16, Coin.GAP*4), new Coin(Coin.GAP*10, Coin.GAP*5), 
+									 new Coin(Coin.GAP*11, Coin.GAP*5), new Coin(Coin.GAP*12, Coin.GAP*5), new Coin(Coin.GAP*13, Coin.GAP*5), 
+									 new Coin(Coin.GAP*14, Coin.GAP*5), new Coin(Coin.GAP*15, Coin.GAP*5), // 2nd clump
+
+									 new Coin(Coin.GAP*19, Coin.GAP*6), new Coin(Coin.GAP*20, Coin.GAP*6), new Coin(Coin.GAP*21, Coin.GAP*6), 
+		                             new Coin(Coin.GAP*22, Coin.GAP*6), new Coin(Coin.GAP*23, Coin.GAP*6), new Coin(Coin.GAP*24, Coin.GAP*6),
+		                             new Coin(Coin.GAP*18, Coin.GAP*7), new Coin(Coin.GAP*19, Coin.GAP*7), new Coin(Coin.GAP*20, Coin.GAP*7), 
+									 new Coin(Coin.GAP*21, Coin.GAP*7), new Coin(Coin.GAP*22, Coin.GAP*7), new Coin(Coin.GAP*23, Coin.GAP*7), 
+									 new Coin(Coin.GAP*24, Coin.GAP*7), new Coin(Coin.GAP*25, Coin.GAP*7), new Coin(Coin.GAP*19, Coin.GAP*8), 
+									 new Coin(Coin.GAP*20, Coin.GAP*8), new Coin(Coin.GAP*21, Coin.GAP*8), new Coin(Coin.GAP*22, Coin.GAP*8), 
+									 new Coin(Coin.GAP*23, Coin.GAP*8), new Coin(Coin.GAP*24, Coin.GAP*8) // 3rd clump
 									};
 	// 2 overlapping curves of coins
-	private final Coin[] CURVEFormation = {new Coin(0, Coin.GAP*4), 
+	private final Coin[] CURVEFormation = {new Coin(0, Coin.GAP*4),
 		
 		                             new Coin(Coin.GAP, Coin.GAP*3), new Coin(Coin.GAP*2, Coin.GAP*2), new Coin(Coin.GAP*3, Coin.GAP*2), 
 									 new Coin(Coin.GAP*4, Coin.GAP), new Coin(Coin.GAP*5, Coin.GAP), new Coin(Coin.GAP*6, Coin.GAP), 
 									 new Coin(Coin.GAP*7, 0), new Coin(Coin.GAP*8, 0), new Coin(Coin.GAP*9, 0), 
 									 new Coin(Coin.GAP*10, 0), new Coin(Coin.GAP*11, Coin.GAP), new Coin(Coin.GAP*12, Coin.GAP), 
 									 new Coin(Coin.GAP*13, Coin.GAP), new Coin(Coin.GAP*14, Coin.GAP*2), new Coin(Coin.GAP*15, Coin.GAP*2), new Coin(Coin.GAP*16, Coin.GAP*3), 
-									 
-									 new Coin(Coin.GAP*17, Coin.GAP*4), 
 
 									 new Coin(Coin.GAP, Coin.GAP*5), new Coin(Coin.GAP*2, Coin.GAP*6), new Coin(Coin.GAP*3, Coin.GAP*6), 
 									 new Coin(Coin.GAP*4, Coin.GAP*7), new Coin(Coin.GAP*5, Coin.GAP*7), new Coin(Coin.GAP*6, Coin.GAP*7), 
 									 new Coin(Coin.GAP*7, Coin.GAP*8), new Coin(Coin.GAP*8, Coin.GAP*8), new Coin(Coin.GAP*9, Coin.GAP*8), 
 									 new Coin(Coin.GAP*10, Coin.GAP*8), new Coin(Coin.GAP*11, Coin.GAP*7), new Coin(Coin.GAP*12, Coin.GAP*7), 
-									 new Coin(Coin.GAP*13, Coin.GAP*7), new Coin(Coin.GAP*14, Coin.GAP*6), new Coin(Coin.GAP*15, Coin.GAP*6), new Coin(Coin.GAP*16, Coin.GAP*5)
+									 new Coin(Coin.GAP*13, Coin.GAP*7), new Coin(Coin.GAP*14, Coin.GAP*6), new Coin(Coin.GAP*15, Coin.GAP*6), new Coin(Coin.GAP*16, Coin.GAP*5),
+
+									 new Coin(Coin.GAP*17, Coin.GAP*4), 
+
+									 new Coin(Coin.GAP*18, Coin.GAP*3), new Coin(Coin.GAP*19, Coin.GAP*2), new Coin(Coin.GAP*20, Coin.GAP*2), 
+									 new Coin(Coin.GAP*21, Coin.GAP), new Coin(Coin.GAP*22, Coin.GAP), new Coin(Coin.GAP*23, Coin.GAP), 
+									 new Coin(Coin.GAP*24, 0), new Coin(Coin.GAP*25, 0), new Coin(Coin.GAP*26, 0), 
+									 new Coin(Coin.GAP*27, 0), new Coin(Coin.GAP*28, Coin.GAP), new Coin(Coin.GAP*29, Coin.GAP), 
+									 new Coin(Coin.GAP*30, Coin.GAP), new Coin(Coin.GAP*31, Coin.GAP*2), new Coin(Coin.GAP*32, Coin.GAP*2), new Coin(Coin.GAP*33, Coin.GAP*3),
+
+									 new Coin(Coin.GAP*18, Coin.GAP*5), new Coin(Coin.GAP*19, Coin.GAP*6), new Coin(Coin.GAP*20, Coin.GAP*6), 
+									 new Coin(Coin.GAP*21, Coin.GAP*7), new Coin(Coin.GAP*22, Coin.GAP*7), new Coin(Coin.GAP*23, Coin.GAP*7), 
+									 new Coin(Coin.GAP*24, Coin.GAP*8), new Coin(Coin.GAP*25, Coin.GAP*8), new Coin(Coin.GAP*26, Coin.GAP*8), 
+									 new Coin(Coin.GAP*27, Coin.GAP*8), new Coin(Coin.GAP*28, Coin.GAP*7), new Coin(Coin.GAP*29, Coin.GAP*7), 
+									 new Coin(Coin.GAP*30, Coin.GAP*7), new Coin(Coin.GAP*31, Coin.GAP*6), new Coin(Coin.GAP*32, Coin.GAP*6), new Coin(Coin.GAP*33, Coin.GAP*5),
+
+									 new Coin(Coin.GAP*34, Coin.GAP*4)
 									};
 	// spells out BARRY
 	private final Coin[] BARRYFormation = {
