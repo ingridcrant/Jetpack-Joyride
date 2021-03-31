@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.awt.geom.*;
 import javax.imageio.*;
 import java.awt.image.*;
 import java.util.ArrayList;
@@ -59,6 +60,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private Zapper zapper;
 	private ArrayList<Scientist> scientists;
 	private ArrayList<Missile> missiles;
+
+	private Laser laser1, laser2;
+	private Image laserBeamImage;
+	private Rectangle laserBeamRect;
 
 	private int currentCoins; // current amount of coins (amounts after each game)
 
@@ -203,6 +208,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		scientists = new ArrayList<Scientist>();
 		missiles = new ArrayList<Missile>();
 		
+		laser1 = new Laser(Laser.RIGHT, 600);
+		laser2 = new Laser(Laser.LEFT, 600);
+
 		currentCoins = getCoins();
 
 		currentRun = 0;
@@ -535,6 +543,17 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 		removeMissiles();
 
+		laser1.move();
+		laser2.move();
+
+		if(laser1.isFiring() && laser2.isFiring()) {
+			Point2D firingEndPoint1 = laser1.getFiringEndPoint();
+			Point2D firingEndPoint2 = laser2.getFiringEndPoint();
+
+			laserBeamImage = Laser.laserBeam.getScaledInstance((int) Math.abs(firingEndPoint1.getX() - firingEndPoint2.getX())+3, Laser.laserBeam.getHeight(), Image.SCALE_DEFAULT);			// the +3 is there to fill in some pixels since the scaling isn't perfect
+			laserBeamRect = new Rectangle((int) Math.min(firingEndPoint1.getX(), firingEndPoint2.getX()), (int) firingEndPoint1.getY(), laserBeamImage.getWidth(null), laserBeamImage.getHeight(null));
+		}
+
 		if(!isGameOver) {
 			barry.move(allKeys[KeyEvent.VK_SPACE]);
 		}
@@ -567,6 +586,15 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			}
 			barryCollided = true;
 			barry.gotHit(); // barry got hit
+		}
+		if(laser1.isFiring() && laser2.isFiring()) {
+			if(barry.intersects(laserBeamRect) || barry.intersects(laser1) || barry.intersects(laser2)) {
+				if(!barry.hasShield()) { // if barry doesn't have a shield
+					isGameOver = true; // the game is over
+				}
+				barryCollided = true;
+				barry.gotHit(); // barry got hit
+			}
 		}
 		for(Missile missile: missiles) {
 			if(missile.isFiring()) {
@@ -602,7 +630,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		else if(screen.equals("game") || screen.equals("game over")) {
 			g.drawImage(background, backgroundX, backgroundY, null); // draws the background
 			g.drawImage(background, reverseBackgroundX+WIDTH, reverseBackgroundY, -WIDTH, HEIGHT, null);
-
+			
 			for(Coin coin: coins) {
 				coin.draw(g);
 			}
@@ -615,6 +643,22 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 			for(Missile missile : missiles) {
 				missile.draw(g);
+			}
+
+			laser1.draw(g);
+			laser2.draw(g);
+
+			if(laser1.isAtPosition() && laser2.isAtPosition()) {
+				Line2D.Double warningBeam = new Line2D.Double(laser1.getLoadingLineEndPoint(), laser2.getLoadingLineEndPoint());
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.setColor(Color.RED);
+				g2d.draw(warningBeam);
+			}
+			else if(laser1.isFiring() && laser2.isFiring()) {
+				Point2D firingEndPoint1 = laser1.getFiringEndPoint();
+				Point2D firingEndPoint2 = laser2.getFiringEndPoint();
+				Image laserBeamImage = Laser.laserBeam.getScaledInstance((int) Math.abs(firingEndPoint1.getX() - firingEndPoint2.getX())+3, Laser.laserBeam.getHeight(), Image.SCALE_DEFAULT);			// the +3 is there to fill in some pixels since the scaling isn't perfect
+				g.drawImage(laserBeamImage, (int) Math.min(firingEndPoint1.getX(), firingEndPoint2.getX()), (int) firingEndPoint1.getY(), null);
 			}
 
 			barry.draw(g);
