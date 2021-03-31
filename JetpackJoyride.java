@@ -190,18 +190,18 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 								new Coin(Coin.GAP*21,Coin.GAP*3), new Coin(Coin.GAP*21,Coin.GAP*4)		// the "Y" part
 							};
 
-	// zapper formations
+	// zapper formations:
 	// zapper formation #1: 3 vertical zappers (up, down, middle), 2 horizontal zapper (up, down)
-	private final Zapper[] zapperFormation1 = {new Zapper("vertical", 0, TOPBORDERHEIGHT + 50), new Zapper("vertical", 20, HEIGHT - BOTTOMBORDERHEIGHT - (int)this.getHeight() - 50), new Zapper("vertical", 40, HEIGHT/2 - (int)this.getHeight()/2), new Zapper("horizontal", 60, TOPBORDERHEIGHT + 50), new Zapper("horizontal", 80, HEIGHT - BOTTOMBORDERHEIGHT - (int)this.getHeight() - 50)};
+	private final Zapper[] zapperFormation1 = {new Zapper("vertical", 0, TOPBORDERHEIGHT+50), new Zapper("vertical", Zapper.verticalZapper.getWidth()+20, HEIGHT-BOTTOMBORDERHEIGHT-(int)this.getHeight()-50), new Zapper("vertical", 2*Zapper.verticalZapper.getWidth()+2*20, HEIGHT/2-(int)this.getHeight()/2), new Zapper("horizontal", 3*Zapper.verticalZapper.getWidth()+3*20, TOPBORDERHEIGHT+50), new Zapper("horizontal", 3*Zapper.verticalZapper.getWidth()+Zapper.horizontalZapper.getWidth()+4*20, HEIGHT-BOTTOMBORDERHEIGHT-(int)this.getHeight()-50)};
 	// zapper formtion #2: 4 vertical zapper (up, down, middle, middle)
-	private final Zapper[] zapperFormation2 = {new Zapper("vertical", 0, TOPBORDERHEIGHT + 50), new Zapper("vertical", 20, HEIGHT - BOTTOMBORDERHEIGHT - (int)this.getHeight() - 50), new Zapper("vertical", 40, HEIGHT/2 - (int)this.getHeight()/2), new Zapper("vertical", 60, HEIGHT/2 - (int)this.getHeight()/2)};
+	private final Zapper[] zapperFormation2 = {new Zapper("vertical", 0, TOPBORDERHEIGHT+50), new Zapper("vertical", Zapper.verticalZapper.getWidth()+20, HEIGHT-BOTTOMBORDERHEIGHT-(int)this.getHeight()-50), new Zapper("vertical", 2*Zapper.verticalZapper.getWidth()+2*20, HEIGHT/2-(int)this.getHeight()/2), new Zapper("vertical", 2*Zapper.verticalZapper.getWidth()+Zapper.horizontalZapper.getWidth()+3*20, HEIGHT/2-(int)this.getHeight()/2)};
 	// zapper formation #3: 1 diagonal zapper (up), 1 vertical zapper (middle), 1 diagonal zapper (middle), 2 horizontal zapper (up, down)
-	private final Zapper[] zapperFormation3 = {new Zapper("diagonal1", 0, TOPBORDERHEIGHT + 50), new Zapper("vertical", 20, HEIGHT/2 - (int)this.getHeight()/2), new Zapper("diagonal2", 40, HEIGHT/2 - (int)this.getHeight()/2), new Zapper("horizontal", 60, TOPBORDERHEIGHT + 50), new Zapper("horizontal", 80, HEIGHT - BOTTOMBORDERHEIGHT - (int)this.getHeight() - 50)};
+	private final Zapper[] zapperFormation3 = {new Zapper("diagonal1", 0, TOPBORDERHEIGHT+50), new Zapper("vertical", Zapper.diagonal1Zapper.getWidth()+20, HEIGHT/2-(int)this.getHeight()/2), new Zapper("diagonal2", Zapper.diagonal1Zapper.getWidth()+Zapper.verticalZapper.getWidth()+2*20, HEIGHT/2-(int)this.getHeight()/2), new Zapper("horizontal", Zapper.diagonal1Zapper.getWidth()+Zapper.verticalZapper.getWidth()+Zapper.diagonal2Zapper.getWidth()+3*20, TOPBORDERHEIGHT+50), new Zapper("horizontal", Zapper.diagonal1Zapper.getWidth()+Zapper.verticalZapper.getWidth()+Zapper.diagonal2Zapper.getWidth()+Zapper.horizontalZapper.getWidth()+4*20, HEIGHT-BOTTOMBORDERHEIGHT-(int)this.getHeight()-50)};
 	// zapper formation #4: 1 diagonal zapper (up), 3 vertical zappers (up, down middle)
-	private final Zapper[] zapperFormation4 = {new Zapper("diagonal1", 0, TOPBORDERHEIGHT + 50), new Zapper("vertical", 20, TOPBORDERHEIGHT + 50), new Zapper("vertical", 40, HEIGHT - BOTTOMBORDERHEIGHT - (int)this.getHeight() - 1500), new Zapper("vertical", 60, HEIGHT/2 - (int)this.getHeight()/2)};
+	private final Zapper[] zapperFormation4 = {new Zapper("diagonal1", 0, TOPBORDERHEIGHT+50), new Zapper("vertical", Zapper.diagonal1Zapper.getWidth()+20, TOPBORDERHEIGHT+50), new Zapper("vertical", Zapper.diagonal1Zapper.getWidth()+Zapper.verticalZapper.getWidth()+2*20, HEIGHT-BOTTOMBORDERHEIGHT-(int)this.getHeight()-50), new Zapper("vertical", Zapper.diagonal1Zapper.getWidth()+2*Zapper.verticalZapper.getWidth()+3*20, HEIGHT/2-(int)this.getHeight()/2)};
 
 	private Coin[][] coinFormations = {COINFormation, CLUMPFormation, CURVEFormation, BARRYFormation};
-	private Zapper[][] zapperFormations = {zapperFormation1, zapperFormation1, zapperFormation3, zapperFormation4};
+	private Zapper[][] zapperFormations = {zapperFormation1, zapperFormation2, zapperFormation3, zapperFormation4};
 
 	public JetpackJoyridePanel() {
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -410,7 +410,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	}
 
 	// adds lasers:
-	public void addLasers() {
+	public void addLaser() {
 		int randY = ((int) (rand.nextInt(650-100)+100)/10)*10;
 		Laser[] randLaserPair = {new Laser(Laser.RIGHT, randY), new Laser(Laser.LEFT, randY)};
 		lasers.add(randLaserPair);
@@ -418,6 +418,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	// removes laser if they are off the screen:
 	public void removeLasers() {
 		ArrayList<Laser[]> removedLasers = new ArrayList<Laser[]>();
+
 		for(Laser[] laserPair : lasers) {
 			Laser laser1 = laserPair[0];
 			Laser laser2 = laserPair[1];
@@ -425,6 +426,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				removedLasers.add(laserPair);
 			}
 		}
+
 		lasers.removeAll(removedLasers);
 	}
 
@@ -439,7 +441,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		ArrayList<Zapper> removedZappers = new ArrayList<Zapper>();
 
 		for(Zapper zapper : zappers) {
-			if(zapper.getX() <= 0) {
+			if(zapper.getX() + zapper.getWidth() <= 0) {
 				removedZappers.add(zapper);
 			}
 		}
@@ -458,9 +460,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	// removes coins if they are off the screen or if barry collected them:
 	public void removeCoins() {
 		ArrayList<Coin> removedCoins = new ArrayList<Coin>();
-		
+
 		for(Coin coin : coins) {
-			if(coin.getX() <= 0 || barry.intersects(coin)) {
+			if(coin.getX() + coin.getWidth() <= 0 || barry.intersects(coin)) {
 				removedCoins.add(coin);
 			}
 		}
@@ -549,14 +551,14 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	// lets the player buy shields:
 	public void buyShield() {
-		if(currentCoins >= 1500) { // if the player has enough coins to buy a shield, the player is allowed to buy a shield
-			currentCoins -= 1500;
+		if(currentCoins >= 600) { // if the player has enough coins to buy a shield, the player is allowed to buy a shield
+			currentCoins -= 600;
 			numOfShields++;
 			buyShieldsMessage = "You bought a shield! You now have "+numOfShields+" shields and "+currentCoins+" coins left.";
 			setNumOfShields();
 		}
 		else { // the player is not allowed to buy a shield
-			buyShieldsMessage = "Sorry, you don't have enough coins to buy a shield.";
+			buyShieldsMessage = "Sorry, you don't have enough coins to buy a shield. Shields cost 600 coins!";
 		}
 	}
 
@@ -590,21 +592,17 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		boolean barryCollided = false;
 
-		if(currentStretch.equals("coins")) {
-			addCoins();
-		}
 		for(Coin coin: coins) {
 			coin.move();
-			if(barry.intersects(coin)) {
-				SoundPlayer.playSoundEffect(SoundPlayer.coin, 1);
-				currentCoins++;
+			if(coin.getX() + coin.getWidth() <= 0 || barry.intersects(coin)) {
+				if(barry.intersects(coin)) {
+					SoundPlayer.playSoundEffect(SoundPlayer.coin, 1);
+					currentCoins++;
+				}
 			}
 		}
 		removeCoins();
 
-		if(currentStretch.equals("zappers")) {
-			addZappers();
-		}
 		for(Zapper zapper : zappers) {
 			if(barry.collidesWith(zapper)) { // if barry hits a zapper
 				if(!barry.hasShield()) { // if barry doesn't have a shield
@@ -628,7 +626,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		if(currentStretch.equals("lasers")) {
 			if(lasers.size() < 3) {
-				addLasers();
+				addLaser();
 			}
 		}
 		for(Laser[] laserPair : lasers) {
@@ -721,17 +719,17 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 
 		// for every stretch of 100 metres, a new obstacle appears
-		if(currentRun % 100 == 0 && currentRun != 0) {
+		if(currentRun % 80 == 0 && currentRun != 0) {
 			double randSelection = new Random().nextDouble();
 
 			if(randSelection < 0.45) { // coins have a 45% chance of appearing
-				currentStretch = "coins";
+				addCoins();
 			}
 			else if(randSelection >= 0.45 && randSelection < 0.9) { // zappers have a 45% chance of appearing
-				currentStretch = "zappers";
+				addZappers();
 			}
 			else { // lasers have a 10% chance of appearing
-				currentStretch = "lasers";
+				addLaser();
 			}
 		}
     }
@@ -823,13 +821,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 						buyShieldsMessage = "";
 					}
 				}
-
-				if(buyShieldsMessage.contains("You bought")) {
+				
 					g.setFont(myFont.deriveFont(Font.BOLD, 25f));
-					g.drawString(buyShieldsMessage, 120, HEIGHT/2 + 100);
-				} else {
 					g.drawString(buyShieldsMessage, 150, HEIGHT/2 + 100);
-				}
 			}
 		}
 	}
