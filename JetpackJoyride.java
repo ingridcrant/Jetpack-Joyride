@@ -43,7 +43,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	 */
     private static Timer myTimer;
     public static final int WIDTH=1000, HEIGHT=750; // width and height of the panel
+	public static final int TOPBORDERHEIGHT = 120, BOTTOMBORDERHEIGHT = 100;
 	private static final Image background = new ImageIcon("Images/background.png").getImage(); // background image (the lab)
+	private static Image laserBeamImage = JetpackJoyridePanel.loadBuffImg("laserbeam.png");
+	private static Rectangle laserBeamRect;
 	private static int backgroundX = 0, backgroundY = 0, reverseBackgroundX = WIDTH, reverseBackgroundY = 0;
 	public static int speedX = -20; // speed of the background
 
@@ -57,22 +60,21 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	public static Barry barry;
 
-	private Zapper zapper;
+	private ArrayList<Zapper> zappers;
 	private ArrayList<Scientist> scientists;
 	private ArrayList<Missile> missiles;
+	private ArrayList<Laser[]> lasers;
+	private ArrayList<Coin> coins;
 
-	private Laser laser1, laser2;
-	private Image laserBeamImage;
-	private Rectangle laserBeamRect;
+	private String currentStretch;
 
 	private int currentCoins; // current amount of coins (amounts after each game)
-
 	public static int currentRun; // current distance ran
 	private int longestRun; // longest run distance
 	private String longestRunInfo; // information about the longest run (aka name and distance travelled in the form "name: distance")
 
 	private int numOfShields; // current number of shields (amounts after each game)
-	private double missileProbability; // the probability of a missile appearing
+	private double missileProbability; // the probabilities of a missile/laser appearing
 
 	private String screen = "start";
 	private static boolean isGameOver = false;
@@ -187,9 +189,18 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 								new Coin(Coin.GAP*21,Coin.GAP*3), new Coin(Coin.GAP*21,Coin.GAP*4)		// the "Y" part
 							};
 
+	// zapper formations
+	// zapper formation #1: 3 vertical zappers (up, down, middle), 2 horizontal zapper (up, down)
+	private final Zapper[] zapperFormation1 = {new Zapper("vertical", 0, TOPBORDERHEIGHT + 50), new Zapper("vertical", 20, HEIGHT - BOTTOMBORDERHEIGHT - (int)this.getHeight() - 50), new Zapper("vertical", 40, HEIGHT/2 - (int)this.getHeight()/2), new Zapper("horizontal", 60, TOPBORDERHEIGHT + 50), new Zapper("horizontal", 80, HEIGHT - BOTTOMBORDERHEIGHT - (int)this.getHeight() - 50)};
+	// zapper formtion #2: 4 vertical zapper (up, down, middle, middle)
+	private final Zapper[] zapperFormation2 = {new Zapper("vertical", 0, TOPBORDERHEIGHT + 50), new Zapper("vertical", 20, HEIGHT - BOTTOMBORDERHEIGHT - (int)this.getHeight() - 50), new Zapper("vertical", 40, HEIGHT/2 - (int)this.getHeight()/2), new Zapper("vertical", 60, HEIGHT/2 - (int)this.getHeight()/2)};
+	// zapper formation #3: 1 diagonal zapper (up), 1 vertical zapper (middle), 1 diagonal zapper (middle), 2 horizontal zapper (up, down)
+	private final Zapper[] zapperFormation3 = {new Zapper("diagonal1", 0, TOPBORDERHEIGHT + 50), new Zapper("vertical", 20, HEIGHT/2 - (int)this.getHeight()/2), new Zapper("diagonal2", 40, HEIGHT/2 - (int)this.getHeight()/2), new Zapper("horizontal", 60, TOPBORDERHEIGHT + 50), new Zapper("horizontal", 80, HEIGHT - BOTTOMBORDERHEIGHT - (int)this.getHeight() - 50)};
+	// zapper formation #4: 1 diagonal zapper (up), 3 vertical zappers (up, down middle)
+	private final Zapper[] zapperFormation4 = {new Zapper("diagonal1", 0, TOPBORDERHEIGHT + 50), new Zapper("vertical", 20, TOPBORDERHEIGHT + 50), new Zapper("vertical", 40, HEIGHT - BOTTOMBORDERHEIGHT - (int)this.getHeight() - 1500), new Zapper("vertical", 60, HEIGHT/2 - (int)this.getHeight()/2)};
+
 	private Coin[][] coinFormations = {COINFormation, CLUMPFormation, CURVEFormation, BARRYFormation};
-	private ArrayList<Coin> coins = new ArrayList<Coin>();
-	private ArrayList<Coin> removedCoins = new ArrayList<Coin>(); // coins that need to be removed
+	private Zapper[][] zapperFormations = {zapperFormation1, zapperFormation1, zapperFormation3, zapperFormation4};
 
 	public JetpackJoyridePanel() {
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -204,16 +215,17 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 
 		allKeys = new boolean[KeyEvent.KEY_LAST+1];
+		coins = new ArrayList<Coin>();
 		barry = new Barry("barry");
-		zapper = new Zapper("diagonal2", 700, 200);
+		zappers = new ArrayList<Zapper>();
 		scientists = new ArrayList<Scientist>();
 		missiles = new ArrayList<Missile>();
-		
-		laser1 = new Laser(Laser.RIGHT, 600);
-		laser2 = new Laser(Laser.LEFT, 600);
+		lasers = new ArrayList<Laser[]>();
+		laserBeamRect = new Rectangle();
+
+		currentStretch = "";
 
 		currentCoins = getCoins();
-
 		currentRun = 0;
 		longestRun = Integer.parseInt((getLongestRun().split(": "))[1]);
 		longestRunInfo = getLongestRun();
@@ -377,7 +389,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	// adds missiles randomly:
 	public void addMissiles() {
 		boolean canSpawn = new Random().nextDouble() < missileProbability;
-		if(canSpawn && missiles.isEmpty()) {
+		if(canSpawn && lasers.isEmpty() && missiles.isEmpty()) {
 			int randDir = rand.nextInt(2); // chooses a random direction for the missile to face (left: 0, right: 1)
 			missiles.add(new Missile(randDir));
 		}
@@ -395,9 +407,67 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		missiles.removeAll(removedMissiles);
 	}
 
-	public void resetCoins() {
+	// adds lasers:
+	public void addLasers() {
+		int randY = ((int) (rand.nextInt(650-100)+100)/10)*10;
+		Laser[] randLaserPair = {new Laser(Laser.RIGHT, randY), new Laser(Laser.LEFT, randY)};
+		lasers.add(randLaserPair);
+	}
+	// removes laser if they are off the screen:
+	public void removeLasers() {
+		ArrayList<Laser[]> removedLasers = new ArrayList<Laser[]>();
+		for(Laser[] laserPair : lasers) {
+			Laser laser1 = laserPair[0];
+			Laser laser2 = laserPair[1];
+			if(laser1.isOff() && laser2.isOff()) {
+				removedLasers.add(laserPair);
+			}
+		}
+		lasers.removeAll(removedLasers);
+	}
+
+	public void addZappers() {
+		Zapper[] randFormation = zapperFormations[rand.nextInt(zapperFormations.length)];
+		for(Zapper zapper : randFormation) {
+			Zapper newZapper = new Zapper(zapper.getType(), (int) zapper.getX()+WIDTH+20, (int) zapper.getY());
+			zappers.add(newZapper);
+		}
+	}
+	public void removeZappers() {
+		ArrayList<Zapper> removedZappers = new ArrayList<Zapper>();
+
+		for(Zapper zapper : zappers) {
+			if(zapper.getX() <= 0) {
+				removedZappers.add(zapper);
+			}
+		}
+
+		zappers.removeAll(removedZappers);
+	}
+
+	// adds coins:
+	public void addCoins() {
+		Coin[] randFormation = coinFormations[rand.nextInt(coinFormations.length)];
+		for(Coin coin: randFormation) {
+			Coin newCoin = new Coin((int) coin.getX()+WIDTH+20, (int) coin.getY()+200);
+			coins.add(newCoin);
+		}
+	}
+	// removes coins if they are off the screen or if barry collected them:
+	public void removeCoins() {
+		ArrayList<Coin> removedCoins = new ArrayList<Coin>();
+		
+		for(Coin coin : coins) {
+			if(coin.getX() <= 0 || barry.intersects(coin)) {
+				removedCoins.add(coin);
+			}
+		}
+
 		coins.removeAll(removedCoins);
-		removedCoins.clear();
+	}
+
+	public static void resetlaserBeamRect() {
+		laserBeamRect = new Rectangle();
 	}
 
 	// flips images horizontally:
@@ -510,6 +580,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				}
 			}
 		}
+
 		backgroundX += speedX;
 		reverseBackgroundX += speedX;
 		if(backgroundX <= -WIDTH) backgroundX = reverseBackgroundX+WIDTH;
@@ -517,44 +588,60 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		boolean barryCollided = false;
 
-		// adds coins:
-		if(coins.isEmpty()) {
-			Coin[] randFormation = coinFormations[rand.nextInt(coinFormations.length)];
-			for(Coin coin: randFormation) {
-				Coin newCoin = new Coin((int) coin.getX()+WIDTH+20, (int) coin.getY()+200);
-				coins.add(newCoin);
-			}
+		if(currentStretch.equals("coins")) {
+			addCoins();
 		}
 		for(Coin coin: coins) {
 			coin.move();
-			if(coin.getX() < 0) {
-				removedCoins.add(coin);
-			} else if(barry.intersects(coin)) {
-				removedCoins.add(coin);
+			if(barry.intersects(coin)) {
 				SoundPlayer.playSoundEffect(SoundPlayer.coin, false);
 				currentCoins++;
 			}
 		}
-		resetCoins();
+		removeCoins();
 
-		zapper.move();
+		if(currentStretch.equals("zappers")) {
+			addZappers();
+		}
+		for(Zapper zapper : zappers) {
+			if(barry.collidesWith(zapper)) { // if barry hits a zapper
+				if(!barry.hasShield()) { // if barry doesn't have a shield
+					isGameOver = true; // the game is over
+				}
+				barryCollided = true;
+				barry.gotHit(); // barry got hit
+			}
 
-		addMissiles();
+			zapper.move();
+		}
+		removeZappers();
+
+		if(!currentStretch.equals("lasers")) {
+			addMissiles();
+		}
 		for(Missile missile : missiles) {
 			missile.move();
 		}
 		removeMissiles();
 
-		laser1.move();
-		laser2.move();
-
-		if(laser1.isFiring() && laser2.isFiring()) {
-			Point2D firingEndPoint1 = laser1.getFiringEndPoint();
-			Point2D firingEndPoint2 = laser2.getFiringEndPoint();
-
-			laserBeamImage = Laser.laserBeam.getScaledInstance((int) Math.abs(firingEndPoint1.getX() - firingEndPoint2.getX())+3, Laser.laserBeam.getHeight(), Image.SCALE_DEFAULT);			// the +3 is there to fill in some pixels since the scaling isn't perfect
-			laserBeamRect = new Rectangle((int) Math.min(firingEndPoint1.getX(), firingEndPoint2.getX()), (int) firingEndPoint1.getY(), laserBeamImage.getWidth(null), laserBeamImage.getHeight(null));
+		if(currentStretch.equals("lasers")) {
+			if(lasers.size() < 3) {
+				addLasers();
+			}
 		}
+		for(Laser[] laserPair : lasers) {
+			laserPair[0].move();
+			laserPair[1].move();
+
+			if(laserPair[0].isFiring() && laserPair[1].isFiring()) {
+				Point2D firingEndPoint1 = laserPair[0].getFiringEndPoint();
+				Point2D firingEndPoint2 = laserPair[1].getFiringEndPoint();
+
+				laserBeamImage = laserBeamImage.getScaledInstance((int) Math.abs(firingEndPoint1.getX() - firingEndPoint2.getX())+3, laserBeamImage.getHeight(null), Image.SCALE_DEFAULT);			// the +3 is there to fill in some pixels since the scaling isn't perfect
+				laserBeamRect = new Rectangle((int) Math.min(firingEndPoint1.getX(), firingEndPoint2.getX()), (int) firingEndPoint1.getY(), laserBeamImage.getWidth(null), laserBeamImage.getHeight(null));
+			}
+		}
+		removeLasers();
 
 		if(!isGameOver) {
 			barry.move(allKeys[KeyEvent.VK_SPACE]);
@@ -574,6 +661,19 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			if(scientist.intersects(barry)) { // if barry hits a scientist
 				scientist.faint(RIGHT); // the scientist faints
 			}
+			if(scientist.intersects(laserBeamRect)) {	// if the laser beam hits a scientist
+				scientist.faint(scientist.getHitByLaserFallingDirection()); // the scientist faints in the opposite direction they are walking in
+			}
+			for(Laser[] laserPair : lasers) {
+				if(laserPair[0].isFiring() && laserPair[1].isFiring()){
+					if(scientist.intersects(laserPair[0])) {
+						scientist.faint(scientist.getHitByLaserFallingDirection()); // the scientist faints in the opposite direction they are walking in
+					}
+					else if(scientist.intersects(laserPair[1])) {
+						scientist.faint(scientist.getHitByLaserFallingDirection()); // the scientist faints in the opposite direction they are walking in
+					}
+				}
+			}
 			for(Missile missile : missiles) {
 				if(scientist.intersects(missile)) { // if a missile hits a scientist
 					scientist.faint(missile.getDirection()); // the scientist faints
@@ -582,20 +682,15 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 		removeScientists();
 
-		if(barry.collidesWith(zapper)) { // if barry hits a zapper
-			if(!barry.hasShield()) { // if barry doesn't have a shield
-				isGameOver = true; // the game is over
-			}
-			barryCollided = true;
-			barry.gotHit(); // barry got hit
-		}
-		if(laser1.isFiring() && laser2.isFiring()) {
-			if(barry.intersects(laserBeamRect) || barry.intersects(laser1) || barry.intersects(laser2)) {
-				if(!barry.hasShield()) { // if barry doesn't have a shield
-					isGameOver = true; // the game is over
+		for(Laser[] laserPair : lasers) {
+			if(laserPair[0].isFiring() && laserPair[1].isFiring()) {
+				if(barry.intersects(laserBeamRect) || barry.intersects(laserPair[0]) || barry.intersects(laserPair[1])) { // if barry hits a laser
+					if(!barry.hasShield()) { // if barry doesn't have a shield
+						isGameOver = true; // the game is over
+					}
+					barryCollided = true;
+					barry.gotHit(); // barry got hit
 				}
-				barryCollided = true;
-				barry.gotHit(); // barry got hit
 			}
 		}
 		for(Missile missile: missiles) {
@@ -609,7 +704,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				}
 			}
 		}
-		if(!barryCollided && barry.isHit() && barry.hasShield()) { // marks the frame right after barry is hit
+		if(!barryCollided && barry.isHit() && barry.hasShield()) { // the frame right after barry is hit
 			barry.resetHit();
 			barry.deactivateShield();
 			numOfShields--;
@@ -621,6 +716,21 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		if(currentRun % 100 == 0) {
 			speedX -= 3;
 			missileProbability += 0.001;
+		}
+
+		// for every stretch of 100 metres, a new obstacle appears
+		if(currentRun % 100 == 0 && currentRun != 0) {
+			double randSelection = new Random().nextDouble();
+
+			if(randSelection < 0.45) { // coins have a 45% chance of appearing
+				currentStretch = "coins";
+			}
+			else if(randSelection >= 0.45 && randSelection < 0.9) { // zappers have a 45% chance of appearing
+				currentStretch = "zappers";
+			}
+			else { // lasers have a 10% chance of appearing
+				currentStretch = "lasers";
+			}
 		}
     }
     
@@ -637,7 +747,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				coin.draw(g);
 			}
 
-			zapper.draw(g);
+			for(Zapper zapper : zappers) {
+				zapper.draw(g);
+			}
 
 			for(Scientist scientist : scientists) {
 				scientist.draw(g);
@@ -647,20 +759,24 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				missile.draw(g);
 			}
 
-			laser1.draw(g);
-			laser2.draw(g);
+			for(Laser[] laserPair : lasers) {
+				laserPair[0].draw(g);
+				laserPair[1].draw(g);
 
-			if(laser1.isAtPosition() && laser2.isAtPosition()) {
-				Line2D.Double warningBeam = new Line2D.Double(laser1.getLoadingLineEndPoint(), laser2.getLoadingLineEndPoint());
-				Graphics2D g2d = (Graphics2D) g;
-				g2d.setColor(Color.RED);
-				g2d.draw(warningBeam);
-			}
-			else if(laser1.isFiring() && laser2.isFiring()) {
-				Point2D firingEndPoint1 = laser1.getFiringEndPoint();
-				Point2D firingEndPoint2 = laser2.getFiringEndPoint();
-				Image laserBeamImage = Laser.laserBeam.getScaledInstance((int) Math.abs(firingEndPoint1.getX() - firingEndPoint2.getX())+3, Laser.laserBeam.getHeight(), Image.SCALE_DEFAULT);			// the +3 is there to fill in some pixels since the scaling isn't perfect
-				g.drawImage(laserBeamImage, (int) Math.min(firingEndPoint1.getX(), firingEndPoint2.getX()), (int) firingEndPoint1.getY(), null);
+				if(laserPair[0].isAtPosition() && laserPair[1].isAtPosition()) {
+					Line2D.Double warningBeam = new Line2D.Double(laserPair[0].getLoadingLineEndPoint(), laserPair[1].getLoadingLineEndPoint());
+					
+					Graphics2D g2d = (Graphics2D) g;
+					g2d.setColor(Color.RED);
+					g2d.draw(warningBeam);
+				}
+				else if(laserPair[0].isFiring() && laserPair[1].isFiring()) {
+					Point2D firingEndPoint1 = laserPair[0].getFiringEndPoint();
+					Point2D firingEndPoint2 = laserPair[1].getFiringEndPoint();
+
+					laserBeamImage = laserBeamImage.getScaledInstance((int) Math.abs(firingEndPoint1.getX() - firingEndPoint2.getX())+3, laserBeamImage.getHeight(null), Image.SCALE_DEFAULT);			// the +3 is there to fill in some pixels since the scaling isn't perfect
+					g.drawImage(laserBeamImage, (int) Math.min(firingEndPoint1.getX(), firingEndPoint2.getX()), (int) firingEndPoint1.getY(), null);
+				}
 			}
 
 			barry.draw(g);

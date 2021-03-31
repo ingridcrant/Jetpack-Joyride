@@ -12,16 +12,15 @@ import java.util.Scanner;
 public class Laser extends Rectangle {
     private BufferedImage laser = JetpackJoyridePanel.loadBuffImg("laser.png");
     private BufferedImage firingLaser = JetpackJoyridePanel.loadBuffImg("laserfiring.png");
-    public static final BufferedImage laserBeam = JetpackJoyridePanel.loadBuffImg("laserbeam.png");
     private static final int LASERSPEED = 5, LOADINGELLIPSESPEED = 3;
-    private static final int FRAMESBEFOREPOSITION = 20;
-    private int frameNumBeforePosition;
+    private static final int FRAMESBEFOREPOSITION = 20, FRAMESBEFORECOOLDOWN = 40, FRAMESBEFOREOFF = 18;
+    private int frameNum;
 
     public static final int LEFT = 0, RIGHT = 1;
 
     public static final int LASERBEAMGAP = 30;
 
-    private boolean isMoving, atPosition, firing;
+    private boolean isMoving, atPosition, firing, cooling, off;
 
     private int ellipseRadiusX, ellipseRadiusY;
     private Ellipse2D.Double loadingEllipse;
@@ -41,6 +40,8 @@ public class Laser extends Rectangle {
         isMoving = true;
         atPosition = false;
         firing = false;
+        cooling = false;
+        off = false;
 
         center = new Point();
 
@@ -53,7 +54,7 @@ public class Laser extends Rectangle {
         }
         center.y = yy + laser.getHeight(null)/2;
 
-        frameNumBeforePosition = 0;
+        frameNum = 0;
         ellipseRadiusX = 100;
         ellipseRadiusY = 80;
         loadingEllipse = new Ellipse2D.Double(center.x - ellipseRadiusX, center.y - ellipseRadiusY, 2*ellipseRadiusX, 2*ellipseRadiusY);
@@ -81,13 +82,29 @@ public class Laser extends Rectangle {
     public boolean isFiring() {
         return firing;
     }
+    public boolean isOff() {
+        return off;
+    }
     public void move() {
-        if(dir == RIGHT && isMoving && frameNumBeforePosition == FRAMESBEFOREPOSITION) {
+        if(dir == RIGHT && isMoving && frameNum == FRAMESBEFOREPOSITION) {
             isMoving = false;
             atPosition = true;
-        } else if (dir == LEFT && isMoving && frameNumBeforePosition == FRAMESBEFOREPOSITION) {
+            frameNum = 0;
+        } else if (dir == LEFT && isMoving && frameNum == FRAMESBEFOREPOSITION) {
             isMoving = false;
             atPosition = true;
+            frameNum = 0;
+        }
+        else if(firing && frameNum == FRAMESBEFORECOOLDOWN) {
+            firing = false;
+            cooling = true;
+            JetpackJoyridePanel.resetlaserBeamRect();
+            frameNum = 0;
+        }
+        else if(cooling && frameNum == FRAMESBEFOREOFF) {
+            cooling = false;
+            off = true;
+            frameNum = 0;
         }
 
         if(isMoving) {
@@ -97,7 +114,7 @@ public class Laser extends Rectangle {
                 center.x -= LASERSPEED;
             }
             setLocation(center.x - laser.getWidth(null)/2, center.y - laser.getHeight(null)/2);
-            frameNumBeforePosition++;
+            frameNum++;
         }
         else if(atPosition) {
             if(loadingEllipse.getWidth() <= getWidth() || loadingEllipse.getHeight() <= getHeight()) {
@@ -123,25 +140,40 @@ public class Laser extends Rectangle {
             else {
                 setBounds(center.x + laser.getWidth(null)/2 - firingLaser.getWidth(null), center.y - firingLaser.getHeight(null)/2, firingLaser.getWidth(null), firingLaser.getHeight(null));
             }
+            frameNum++;
+        }
+        else if(cooling) {
+            if(dir == RIGHT) {
+                center.x -= LASERSPEED;
+            } else {
+                center.x += LASERSPEED;
+            }
+            setLocation(center.x - laser.getWidth(null)/2, center.y - laser.getHeight(null)/2);
+            frameNum++;
         }
     }
     public void draw(Graphics g) {
         if(isMoving) {
             g.drawImage(laser, center.x - laser.getWidth(null)/2, center.y - laser.getHeight(null)/2, null);
-        } else if(atPosition) {
+        }
+        else if(atPosition) {
             g.drawImage(laser, center.x - laser.getWidth(null)/2 , center.y - laser.getHeight(null)/2, null);
 
             Graphics2D g2d = (Graphics2D) g;
             g2d.setColor(Color.RED);
             g2d.draw(loadingEllipse);
 
-        } else if(firing) {
+        }
+        else if(firing) {
             if(dir == RIGHT) {
                 g.drawImage(firingLaser, center.x - laser.getWidth(null)/2 , center.y - firingLaser.getHeight(null)/2, null);
             }
             else if(dir == LEFT) {
                 g.drawImage(firingLaser, center.x + laser.getWidth(null)/2 - firingLaser.getWidth(null), center.y - firingLaser.getHeight(null)/2, null);
             }
+        }
+        else if(cooling) {
+            g.drawImage(laser, center.x - laser.getWidth(null)/2, center.y - laser.getHeight(null)/2, null);
         }
     }
 }
