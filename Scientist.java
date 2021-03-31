@@ -50,7 +50,14 @@ public class Scientist extends Rectangle {
 
         setBounds(x, y, width, height);
     }
-
+    public int getHitByLaserFallingDirection() {
+        if(dir == RIGHT) {
+            return LEFT;
+        }
+        else {
+            return RIGHT;
+        }
+    }
     public void move() {
         int dx;
         if(walking) {
