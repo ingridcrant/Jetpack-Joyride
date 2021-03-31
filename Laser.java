@@ -1,13 +1,6 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.imageio.*;
 import java.awt.image.*;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
 
 public class Laser extends Rectangle {
     private BufferedImage laser = JetpackJoyridePanel.loadBuffImg("laser.png");
@@ -89,8 +82,10 @@ public class Laser extends Rectangle {
         if(dir == RIGHT && isMoving && frameNum == FRAMESBEFOREPOSITION) {
             isMoving = false;
             atPosition = true;
+            SoundPlayer.playSoundEffect(SoundPlayer.laserLoading, 0);
             frameNum = 0;
-        } else if (dir == LEFT && isMoving && frameNum == FRAMESBEFOREPOSITION) {
+        }
+        else if (dir == LEFT && isMoving && frameNum == FRAMESBEFOREPOSITION) {
             isMoving = false;
             atPosition = true;
             frameNum = 0;
@@ -120,6 +115,7 @@ public class Laser extends Rectangle {
             if(loadingEllipse.getWidth() <= getWidth() || loadingEllipse.getHeight() <= getHeight()) {
                 atPosition = false;
                 firing = true;
+                SoundPlayer.playSoundEffect(SoundPlayer.laserFiring, 3);
                 return;
             }
             loadingEllipse.setFrame(center.x - ellipseRadiusX, center.y - ellipseRadiusY, 2*ellipseRadiusX, 2*ellipseRadiusY);

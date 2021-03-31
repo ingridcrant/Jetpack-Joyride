@@ -12,11 +12,13 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class SoundPlayer {
 	public static final String background = "file:./sounds/background_music.wav";
 	public static final String coin = "file:./sounds/coin.wav";
+	public static final String laserFiring = "file:./sounds/laser_fire_lp.wav";
+	public static final String laserLoading = "file:./sounds/laser_warning.wav";
 
 	// used to play sound effects
 	// soundToPlay is a string specifying the relative path of the sound effect file
 
-	public static void playSoundEffect(String soundToPlay, boolean loopForever) {
+	public static void playSoundEffect(String soundToPlay, int loopNum) {
 		URL soundLocation;
 		try {
 			soundLocation = new URL(soundToPlay);
@@ -25,11 +27,7 @@ public class SoundPlayer {
 			AudioInputStream inputStream;
 			inputStream = AudioSystem.getAudioInputStream(soundLocation);
 			clip.open(inputStream);
-            if(loopForever) {
-                clip.loop(Clip.LOOP_CONTINUOUSLY);									// sound does not loop
-            } else {
-                clip.loop(0);
-            }
+            clip.loop(loopNum);
 			clip.start();														// play sound
 			
 			clip.addLineListener(new LineListener() {							// kill sound thread
