@@ -1,9 +1,11 @@
 import java.awt.*;
+import java.awt.geom.*;
 import java.awt.image.*;
 
 public class Scientist extends Rectangle {
-    private static final int LEFT = 0, RIGHT = 1;
-
+    public static final int LEFT = 0, RIGHT = 1;
+    private final int BLANK = 0x00000000;
+    
     private BufferedImage scientistWalking1 = JetpackJoyridePanel.loadBuffImg("scientist_stationary.png");
     private BufferedImage scientistWalking2 = JetpackJoyridePanel.loadBuffImg("scientist_moving.png");
     private BufferedImage scientistCrouching = JetpackJoyridePanel.loadBuffImg("scientist_crouching.png");
@@ -59,6 +61,43 @@ public class Scientist extends Rectangle {
             return RIGHT;
         }
     }
+    public int getDir() {
+        return dir;
+    }
+
+    public boolean collidesWith(Zapper zapper) {
+        // Check if the boundires intersect
+        if (intersects(zapper)) {
+            // Calculate the collision overlay
+            Rectangle intersectBounds = getCollision(zapper);
+            if (!intersectBounds.isEmpty()) {
+                // Check all the pixels in the collision overlay to determine
+                // if there are any non-alpha pixel collisions...
+                for (int x = intersectBounds.x; x < intersectBounds.x + intersectBounds.width; x++) {
+                    for (int y = intersectBounds.y; y < intersectBounds.y + intersectBounds.height; y++) {
+                        int scientistPixel = getImage().getRGB(x - (int) getX(), y - (int) getY());
+                        int zapperPixel = zapper.getImage().getRGB(x - (int)zapper.getX(), y - (int)zapper.getY());
+                        
+                        // 255 is completely transparent, you might consider using something
+                        // a little less absolute, like 225, to give you a sligtly
+                        // higher hit right, for example...
+                        if (scientistPixel != BLANK && zapperPixel != BLANK) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    protected Rectangle getCollision(Rectangle rect2) {
+        Area a1 = new Area(this);
+        Area a2 = new Area(rect2);
+        a1.intersect(a2);
+        return a1.getBounds();
+    }
+
     public void move() {
         int dx;
         if(walking) {
@@ -74,6 +113,26 @@ public class Scientist extends Rectangle {
         }
         translate(dx, 0);
         x += dx;
+    }
+
+    public BufferedImage getImage() {
+        if(walking) {
+            if(walkingPoseCount > maxWalkingPoseCount/2) {
+                return scientistWalking1;
+            }
+            else {
+                return scientistWalking2;
+            }
+        } else if (crouching) {
+            return scientistCrouching;
+        } else {
+            if(flipped) {
+                return scientistFaintingUpsideDown;
+            }
+            else {
+                return scientistFainting;
+            }
+        }
     }
 
     public void crouch() { // makes scientist crouch

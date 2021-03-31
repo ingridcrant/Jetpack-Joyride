@@ -664,6 +664,16 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			if(scientist.intersects(laserBeamRect)) {	// if the laser beam hits a scientist
 				scientist.faint(scientist.getHitByLaserFallingDirection()); // the scientist faints in the opposite direction they are walking in
 			}
+			for(Zapper zapper : zappers) {
+				if(scientist.collidesWith(zapper)) {
+					if(scientist.getDir() == LEFT) {
+						scientist.faint(RIGHT);
+					}
+					else {
+						scientist.faint(LEFT);
+					}
+				}
+			}
 			for(Laser[] laserPair : lasers) {
 				if(laserPair[0].isFiring() && laserPair[1].isFiring()){
 					if(scientist.intersects(laserPair[0])) {
