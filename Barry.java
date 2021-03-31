@@ -32,6 +32,8 @@ public class Barry extends Rectangle {
     public static double GRAVITY = 0.99;
     public boolean hitFloor = false;
     private boolean canPlayBarrySlidingSound = true;
+    private static final int barryWalkingSoundMaxFrameCount = 3;
+    private int barryWalkingSoundFrameCount = 0;
     private int barryRotationAngle = 270;
 
     public Barry(String picName) {
@@ -89,7 +91,12 @@ public class Barry extends Rectangle {
         }
         if(Y == JetpackJoyridePanel.HEIGHT-HEIGHT-JetpackJoyridePanel.BOTTOMBORDERHEIGHT) {
             RISING = false; FALLING = false; WALKING = true;
-            SoundPlayer.playSoundEffect(SoundPlayer.barryWalking, false);
+            
+            if(barryWalkingSoundFrameCount == barryWalkingSoundMaxFrameCount) {
+                barryWalkingSoundFrameCount = 0;
+                SoundPlayer.playSoundEffect(SoundPlayer.barryWalking, 0);
+            }
+            barryWalkingSoundFrameCount++;
         }
         setBounds(X, Y, getImage().getWidth(), getImage().getHeight());
     }
@@ -114,7 +121,7 @@ public class Barry extends Rectangle {
 
     private void playBarrySlidingSound() {
         if(canPlayBarrySlidingSound) {
-            SoundPlayer.playSoundEffect(SoundPlayer.barrySliding, false);
+            SoundPlayer.playSoundEffect(SoundPlayer.barrySliding, 0);
             canPlayBarrySlidingSound = false;
         }
     }

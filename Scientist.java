@@ -99,7 +99,7 @@ public class Scientist extends Rectangle {
 
     public void playFaintingSound() {
         if(canPlayFaintingSound) {
-            SoundPlayer.playSoundEffect(SoundPlayer.scientistFainting, false);
+            SoundPlayer.playSoundEffect(SoundPlayer.scientistFainting, 0);
             canPlayFaintingSound = false;
         }
     }

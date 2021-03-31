@@ -13,6 +13,7 @@ import java.awt.image.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
+import javax.sound.sampled.Clip;
 
 public class JetpackJoyride extends JFrame{
 	/**
@@ -232,6 +233,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		numOfShields = getNumOfShields();
 		missileProbability = 0.01;
+		// laserProbability = 0.07;	// CHANGE THIS AFTER
 
 		startScreen = new ImageIcon("Images/start_screen.png").getImage();
 
@@ -594,7 +596,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		for(Coin coin: coins) {
 			coin.move();
 			if(barry.intersects(coin)) {
-				SoundPlayer.playSoundEffect(SoundPlayer.coin, false);
+				SoundPlayer.playSoundEffect(SoundPlayer.coin, 1);
 				currentCoins++;
 			}
 		}
@@ -853,7 +855,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	
 	public void	keyPressed(KeyEvent e) {
 		if (screen.equals("start") && e.getKeyCode() == KeyEvent.VK_SPACE) {
-			SoundPlayer.playSoundEffect(SoundPlayer.background, true);
+			SoundPlayer.playSoundEffect(SoundPlayer.background, Clip.LOOP_CONTINUOUSLY);
             screen = "game";
         }
 		if (screen.equals("game") && e.getKeyCode() == KeyEvent.VK_ENTER && numOfShields > 0 && !barry.hasShield()) {
