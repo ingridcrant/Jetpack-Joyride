@@ -530,6 +530,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				removedCoins.add(coin);
 			} else if(barry.intersects(coin)) {
 				removedCoins.add(coin);
+				SoundPlayer.playSoundEffect(SoundPlayer.coin, false);
 				currentCoins++;
 			}
 		}

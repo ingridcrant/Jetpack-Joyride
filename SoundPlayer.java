@@ -11,6 +11,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class SoundPlayer {
 	public static final String background = "file:./sounds/background_music.wav";
+	public static final String coin = "file:./sounds/coin.wav";
 
 	// used to play sound effects
 	// soundToPlay is a string specifying the relative path of the sound effect file
