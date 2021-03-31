@@ -62,7 +62,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	private int currentCoins; // current amount of coins (amounts after each game)
 
-	private int currentRun; // current distance ran
+	public static int currentRun; // current distance ran
 	private int longestRun; // longest run distance
 	private String longestRunInfo; // information about the longest run (aka name and distance travelled in the form "name: distance")
 
@@ -181,11 +181,12 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 								new Coin(Coin.GAP*20,Coin.GAP*2), new Coin(Coin.GAP*21,Coin.GAP*2),
 								new Coin(Coin.GAP*21,Coin.GAP*3), new Coin(Coin.GAP*21,Coin.GAP*4)		// the "Y" part
 							};
+
 	private Coin[][] coinFormations = {COINFormation, CLUMPFormation, CURVEFormation, BARRYFormation};
 	private ArrayList<Coin> coins = new ArrayList<Coin>();
 	private ArrayList<Coin> removedCoins = new ArrayList<Coin>(); // coins that need to be removed
 
-	public JetpackJoyridePanel(){
+	public JetpackJoyridePanel() {
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		addMouseListener(this);
 		addKeyListener(this);

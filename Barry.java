@@ -32,6 +32,7 @@ public class Barry extends Rectangle {
 
     public static double GRAVITY = 0.99;
     public boolean hitFloor = false;
+    private boolean canPlayBarrySlidingSound = true;
     private int barryRotationAngle = 270;
 
     public Barry(String picName) {
@@ -89,6 +90,7 @@ public class Barry extends Rectangle {
         }
         if(Y == JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT) {
             RISING = false; FALLING = false; WALKING = true;
+            SoundPlayer.playSoundEffect(SoundPlayer.barryWalking, false);
         }
         setBounds(X, Y, getImage().getWidth(), getImage().getHeight());
     }
@@ -99,7 +101,8 @@ public class Barry extends Rectangle {
         RISING = false; FALLING = false; WALKING = false; TUMBLING = true;
         Y += fallingYSpeed;
         accelerate(0, GRAVITY); // gravity accelerates the object downwards each tick
-        if(Y >= JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT) {  
+        if(Y >= JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT) { 
+            playBarrySlidingSound(); 
             TUMBLING = false;
             DYING = true;
             Y = JetpackJoyridePanel.HEIGHT-HEIGHT-BOTTOMBORDERHEIGHT;
@@ -108,6 +111,13 @@ public class Barry extends Rectangle {
         }
         fallingYSpeed = Math.ceil(fallingYSpeed);
         setBounds(X, Y, getImage().getWidth(), getImage().getHeight());
+    }
+
+    private void playBarrySlidingSound() {
+        if(canPlayBarrySlidingSound) {
+            SoundPlayer.playSoundEffect(SoundPlayer.barrySliding, false);
+            canPlayBarrySlidingSound = false;
+        }
     }
 
     public int getDyingYSpeed() {

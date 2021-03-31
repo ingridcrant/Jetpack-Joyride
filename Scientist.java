@@ -18,7 +18,8 @@ public class Scientist extends Rectangle {
     private static boolean isMoving = true;
     private boolean walking, crouching, fainting;
     private boolean flipped = false;
-    private boolean crouch = false; // only the smart scientists about 50% can crouch
+    private boolean crouch = false; // only the smart scientists (about 50%) can crouch
+    private boolean canPlayFaintingSound = true;
     private static int maxWalkingPoseCount = 4;
     private int walkingPoseCount = 0;
 
@@ -85,8 +86,16 @@ public class Scientist extends Rectangle {
         walking = false;
         crouching = false;
         fainting = true;
+
+        playFaintingSound();
     }
 
+    public void playFaintingSound() {
+        if(canPlayFaintingSound) {
+            SoundPlayer.playSoundEffect(SoundPlayer.scientistFainting, false);
+            canPlayFaintingSound = false;
+        }
+    }
     public boolean isFainted() {
         return fainting;
     }

@@ -11,7 +11,12 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class SoundPlayer {
 	public static final String background = "file:./sounds/background_music.wav";
-	public static final String coin = "file:./sounds/coin.wav";
+	public static final String coin = "file:./sounds/coin_pickup.wav";
+	public static final String barrySliding = "file:./sounds/fall_slide.wav";
+	public static final String barryWalking = "file:./sounds/foot_step.wav";
+	public static final String missileLaunch = "file:./sounds/missile_launch.wav";
+	public static final String missileWarning = "file:./sounds/missile_warning.wav";
+	public static final String scientistFainting = "file:./sounds/scientist_faint.wav";
 
 	// used to play sound effects
 	// soundToPlay is a string specifying the relative path of the sound effect file
