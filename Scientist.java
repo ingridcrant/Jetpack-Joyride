@@ -18,9 +18,9 @@ public class Scientist extends Rectangle {
     private int width, height;
 
     private static boolean isMoving = true;
-    private boolean walking, crouching, fainting;
-    private boolean flipped = false;
-    private boolean crouch = false; // only the smart scientists (about 50%) can crouch
+    private boolean walking, crouching, fainting;  // the scientist's different phases: walking, crouching, fainting
+    private boolean flipped = false;               // if the scientist's image needs to be flipped upside down
+    private boolean crouch = false;
     private boolean canPlayFaintingSound = true;
     private static int maxWalkingPoseCount = 4;
     private int walkingPoseCount = 0;
@@ -33,11 +33,13 @@ public class Scientist extends Rectangle {
 
         dir = ddir;
 
+        // only allows some of the scientist to crouch:
         if(ccrouch == 0) {
             crouch = true;
         }
 
         if(dir == RIGHT) {
+            // flips the images to face right:
             scientistWalking1 = JetpackJoyridePanel.flipImage(scientistWalking1);
             scientistWalking2 = JetpackJoyridePanel.flipImage(scientistWalking2);
             scientistCrouching = JetpackJoyridePanel.flipImage(scientistCrouching);
@@ -53,6 +55,8 @@ public class Scientist extends Rectangle {
 
         setBounds(x, y, width, height);
     }
+
+    // Getter and setter methods:
     public int getHitByLaserFallingDirection() {
         if(dir == RIGHT) {
             return LEFT;
@@ -64,12 +68,72 @@ public class Scientist extends Rectangle {
     public int getDir() {
         return dir;
     }
+    protected Rectangle getCollision(Rectangle rect2) {
+        Area a1 = new Area(this);
+        Area a2 = new Area(rect2);
+        a1.intersect(a2);
+        return a1.getBounds();
+    }
+    public void crouch() { // makes scientist crouch
+        walking = false;
+        crouching = true;
+        fainting = false;
+    }
+    public void walk() { // makes scientist walk
+        walking = true;
+        crouching = false;
+        fainting = false;
+    }
+    public void faint(int direction) { // makes scientist faint
+        if(dir == direction) {
+            flipped = true;
+        }
+        walking = false;
+        crouching = false;
+        fainting = true;
+
+        playFaintingSound();
+    }
+    public BufferedImage getImage() {
+        if(walking) {
+            if(walkingPoseCount > maxWalkingPoseCount/2) {
+                return scientistWalking1;
+            }
+            else {
+                return scientistWalking2;
+            }
+        } else if (crouching) {
+            return scientistCrouching;
+        } else {
+            if(flipped) {
+                return scientistFaintingUpsideDown;
+            }
+            else {
+                return scientistFainting;
+            }
+        }
+    }
+    public boolean isFainted() {
+        return fainting;
+    }
+    public boolean canCrouch() {
+        return crouch;
+    }
+    public static void stopMoving() {
+        isMoving = false;
+    }
+
+    // plays the sound of the scientist fainting:
+    public void playFaintingSound() {
+        if(canPlayFaintingSound) {
+            SoundPlayer.playSoundEffect(SoundPlayer.scientistFainting, 0);
+            canPlayFaintingSound = false;
+        }
+    }
 
     public boolean collidesWith(Zapper zapper) {
-        // Check if the boundires intersect
-        if (intersects(zapper)) {
-            // Calculate the collision overlay
-            Rectangle intersectBounds = getCollision(zapper);
+        if (intersects(zapper)) {                              // checks if the boundaries intersect
+            Rectangle intersectBounds = getCollision(zapper);  // calculates the collision overlay
             if (!intersectBounds.isEmpty()) {
                 // Check all the pixels in the collision overlay to determine
                 // if there are any non-alpha pixel collisions...
@@ -91,86 +155,23 @@ public class Scientist extends Rectangle {
         return false;
     }
 
-    protected Rectangle getCollision(Rectangle rect2) {
-        Area a1 = new Area(this);
-        Area a2 = new Area(rect2);
-        a1.intersect(a2);
-        return a1.getBounds();
-    }
-
     public void move() {
         int dx;
-        if(walking) {
-            if(dir == LEFT) {
-                dx = JetpackJoyridePanel.speedX-speed;
+        if(walking) {                                    // if the scientist is walking
+            if(dir == LEFT) {                            // if the scientist is facing left
+                dx = JetpackJoyridePanel.speedX-speed;   // the scientist moves left
             }
-            else {
-                dx = JetpackJoyridePanel.speedX+speed;
+            else {                                       // if the scientist is facing right
+                dx = JetpackJoyridePanel.speedX+speed;   // the scientist moves right
             }
         }
-        else {
-            dx = JetpackJoyridePanel.speedX;
+        else {                                           // if the scientist isn't walking
+            dx = JetpackJoyridePanel.speedX;             // the scientist moves with the background (looks like they are stationary)
         }
         translate(dx, 0);
         x += dx;
     }
-
-    public BufferedImage getImage() {
-        if(walking) {
-            if(walkingPoseCount > maxWalkingPoseCount/2) {
-                return scientistWalking1;
-            }
-            else {
-                return scientistWalking2;
-            }
-        } else if (crouching) {
-            return scientistCrouching;
-        } else {
-            if(flipped) {
-                return scientistFaintingUpsideDown;
-            }
-            else {
-                return scientistFainting;
-            }
-        }
-    }
-
-    public void crouch() { // makes scientist crouch
-        walking = false;
-        crouching = true;
-        fainting = false;
-    }
-    public void walk() { // makes scientist walk
-        walking = true;
-        crouching = false;
-        fainting = false;
-    }
-    public void faint(int direction) { // makes scientist faint
-        if(dir == direction) {
-            flipped = true;
-        }
-        walking = false;
-        crouching = false;
-        fainting = true;
-
-        playFaintingSound();
-    }
-
-    public void playFaintingSound() {
-        if(canPlayFaintingSound) {
-            SoundPlayer.playSoundEffect(SoundPlayer.scientistFainting, 0);
-            canPlayFaintingSound = false;
-        }
-    }
-    public boolean isFainted() {
-        return fainting;
-    }
-    public boolean canCrouch() {
-        return crouch;
-    }
-    public static void stopMoving() {
-        isMoving = false;
-    }
+    
     public void draw(Graphics g) {
         if(walking) {
             if(isMoving) {

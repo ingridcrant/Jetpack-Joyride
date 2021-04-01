@@ -12,7 +12,7 @@ public class Missile extends Rectangle {
     private int dir;
     private static final int GAPFROMEDGE = 5;
 
-    private boolean warning, targeting, firing;
+    private boolean warning, targeting, firing;   // booleans for the missile's phases: targeting, warning, or firing
 
     private int currentFrames = 0;
 
@@ -25,19 +25,21 @@ public class Missile extends Rectangle {
         dir = ddir;
 
         warning = false;
-        targeting = true;
+        targeting = true;                                                 // initially, the missile is targeting Barry
         firing = false;
 
         width = missilePic.getWidth();
         height = missilePic.getHeight();
 
-        if(dir == LEFT) {
-            x = JetpackJoyridePanel.WIDTH - width - GAPFROMEDGE;
+        if(dir == LEFT) {                                                 // if the missile is facing left
+            x = JetpackJoyridePanel.WIDTH - width - GAPFROMEDGE;          // places the signal to the right of the screen
         }
-        else {
+        else {                                                            // if the missile is facing right
+            // flips images to face right:
             missilePic = JetpackJoyridePanel.flipImage(missilePic);
             targetingPic = JetpackJoyridePanel.flipImage(targetingPic);
-            x = GAPFROMEDGE;
+
+            x = GAPFROMEDGE;                                              // places the signal to the left of the screen
         }
 
         y = (int) JetpackJoyridePanel.barry.getY();
@@ -45,14 +47,13 @@ public class Missile extends Rectangle {
         setBounds(x, y, width, height);
     }
 
+    // Getter and setter methods:
     public int getDirection() {
         return dir;
     }
-
     public BufferedImage getImage() {
         return missilePic;
     }
-
     public boolean isFiring() {
         return firing;
     }
@@ -61,42 +62,45 @@ public class Missile extends Rectangle {
         currentFrames++;
 
         if(currentFrames == MAXFRAMESBEFOREWARNING) {
-            warn();
+            warn();                                         // warns Barry
         }
         else if(currentFrames == MAXFRAMESBEFOREFIRING) {
-            fire();
+            fire();                                         // fires toward Barry
         }
 
-        if(firing) {
+        if(firing) {                                   // if the missile is firing
             int dx;
-            if(dir == LEFT) {
-                dx = 3*JetpackJoyridePanel.speedX;
+            if(dir == LEFT) {                          // if the missile is facing left
+                dx = 3*JetpackJoyridePanel.speedX;     // moves the missile left
             }
-            else {
-                dx = (-2)*JetpackJoyridePanel.speedX;
+            else {                                     // if the missile is facing right
+                dx = (-2)*JetpackJoyridePanel.speedX;  // moves the missile right
             }
             x += dx;
         }
-        if(targeting) {
-            y = (int) JetpackJoyridePanel.barry.getY();
+        if(targeting) {                                  // if the missile is targeting Barry
+            y = (int) JetpackJoyridePanel.barry.getY();  // the missile follows Barry
         }
         setLocation(x, y);
     }
 
+    // fires the missile:
     public void fire() {
-        if(dir == LEFT) {
-            x = JetpackJoyridePanel.WIDTH;
+        if(dir == LEFT) {                                           // if the missile is facing left
+            x = JetpackJoyridePanel.WIDTH;                          // places the missile off screen (to the right)
         }
-        else {
-            x = 0 - width;
+        else {                                                      // if the missile is facing right
+            x = 0 - width;                                          // places the missile off screen (to the left)
         }
         setBounds(x, y, width, height);
+        
         warning = false;
         targeting = false;
         firing = true;
 
         SoundPlayer.playSoundEffect(SoundPlayer.missileLaunch, 0);
     }
+    // activates the warning signal:
     public void warn() {
         warning = true;
         targeting = false;

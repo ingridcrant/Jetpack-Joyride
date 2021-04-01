@@ -9,7 +9,7 @@ public class Zapper extends Rectangle {
 
     private BufferedImage Zapper;
 
-    private String type;
+    private String type;  // type of zapper: horizontal, vertical, etc.
 
     public Zapper(String type, int X, int Y) {
         this.type = type;
@@ -30,16 +30,16 @@ public class Zapper extends Rectangle {
         setBounds(X, Y, Zapper.getWidth(), Zapper.getHeight());
     }
 
+    // Getter and setter methods:
     public String getType() {
         return type;
     }
-
     public BufferedImage getImage() {
         return Zapper;
     }
 
     public void move() {
-        translate(JetpackJoyridePanel.speedX, 0);
+        translate(JetpackJoyridePanel.speedX, 0);   // zapper moves with the background (looks like it's stationary)
     }
 
     public void draw(Graphics g) {
