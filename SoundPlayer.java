@@ -1,13 +1,6 @@
 import java.io.IOException;
 import java.net.URL;
-
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 
 public class SoundPlayer {
 	public static final String background = "file:./sounds/background_music.wav";
@@ -17,6 +10,10 @@ public class SoundPlayer {
 	public static final String scientistFainting = "file:./sounds/scientist_faint.wav";
 	public static final String barryWalking = "file:./sounds/foot_step.wav";
 	public static final String barrySliding = "file:./sounds/fall_slide.wav";
+	public static final String barryHurt = "file:./sounds/player_hurt_2.wav";
+	public static final String barryZapped = "file:./sounds/barry_zapped.wav";
+	public static final String missileWarning = "file:./sounds/missile_warning.wav";
+	public static final String missileLaunch = "file:./sounds/missile_launch.wav";
 
 	// used to play sound effects
 	// soundToPlay is a string specifying the relative path of the sound effect file
@@ -30,6 +27,11 @@ public class SoundPlayer {
 			AudioInputStream inputStream;
 			inputStream = AudioSystem.getAudioInputStream(soundLocation);
 			clip.open(inputStream);
+
+			if(soundToPlay == background){
+				FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+				gainControl.setValue(-3.0f); // Reduce volume by 3 decibels.
+			}
             clip.loop(loopNum);
 			clip.start();														// play sound
 			

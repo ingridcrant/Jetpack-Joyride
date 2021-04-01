@@ -91,7 +91,7 @@ public class Barry extends Rectangle {
         }
         if(Y == JetpackJoyridePanel.HEIGHT-HEIGHT-JetpackJoyridePanel.BOTTOMBORDERHEIGHT) {
             RISING = false; FALLING = false; WALKING = true;
-            
+
             if(barryWalkingSoundFrameCount == barryWalkingSoundMaxFrameCount) {
                 barryWalkingSoundFrameCount = 0;
                 SoundPlayer.playSoundEffect(SoundPlayer.barryWalking, 0);

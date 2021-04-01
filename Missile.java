@@ -95,14 +95,14 @@ public class Missile extends Rectangle {
         targeting = false;
         firing = true;
 
-        // SoundPlayer.playSoundEffect(SoundPlayer.missileLaunch, false);
+        SoundPlayer.playSoundEffect(SoundPlayer.missileLaunch, 0);
     }
     public void warn() {
         warning = true;
         targeting = false;
         firing = false;
 
-        // SoundPlayer.playSoundEffect(SoundPlayer.missileWarning, false);
+        SoundPlayer.playSoundEffect(SoundPlayer.missileWarning, 0);
     }
 
     public void draw(Graphics g) {
