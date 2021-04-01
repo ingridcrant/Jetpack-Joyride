@@ -30,11 +30,7 @@ public class Laser extends Rectangle {
         width = laser.getWidth();
         height = laser.getHeight();
 
-        isMoving = true;      // the laser is moving
-        atPosition = false;   // the laser is not at position yet
-        firing = false;       // the laser is not firing yet
-        cooling = false;      // the laser is not firing yet
-        off = false;          // the laser is not off yet
+        isMoving = true; atPosition = false; firing = false; cooling = false; off = false;  // the laser is moving
 
         center = new Point();
 
@@ -80,28 +76,25 @@ public class Laser extends Rectangle {
     public boolean isOff() {
         return off;
     }
-    
+
     public void move() {
         if(dir == RIGHT && isMoving && frameNum == FRAMESBEFOREPOSITION) {
-            isMoving = false;
-            atPosition = true;
+            isMoving = false; atPosition = true;                                    // the laser is at position
             SoundPlayer.playSoundEffect(SoundPlayer.laserLoading, 0);
             frameNum = 0;
         }
         else if (dir == LEFT && isMoving && frameNum == FRAMESBEFOREPOSITION) {
-            isMoving = false;
-            atPosition = true;
+            isMoving = false; atPosition = true;                                    // the laser is at position
             frameNum = 0;
         }
         else if(firing && frameNum == FRAMESBEFORECOOLDOWN) {
-            firing = false;
-            cooling = true;
+            firing = false; cooling = true;                                         // the laser is cooling
             JetpackJoyridePanel.resetlaserBeamRect();
             frameNum = 0;
         }
         else if(cooling && frameNum == FRAMESBEFOREOFF) {
             cooling = false;
-            off = true;
+            off = true;                                                             // the laser is off
             frameNum = 0;
         }
 
