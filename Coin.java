@@ -3,12 +3,11 @@ import java.awt.image.*;
 import java.util.Random;
 
 public class Coin extends Rectangle {
-    private static BufferedImage coinSpriteImage = JetpackJoyridePanel.loadBuffImg("coinsprite.png");
-
+    private static final BufferedImage coinSpriteImage = JetpackJoyridePanel.loadBuffImg("coinsprite.png");
     private static final int NUMSPRITES = 6;
-    private static BufferedImage[] sprites = getSprites(coinSpriteImage, NUMSPRITES);
+    private static final BufferedImage[] sprites = getSprites(coinSpriteImage, NUMSPRITES);
     private int currentSprite, x, y;
-    public static final int WIDTH = coinSpriteImage.getWidth()/6, HEIGHT = coinSpriteImage.getHeight(), GAP = WIDTH+2;
+    public static int WIDTH, HEIGHT, GAP;
     
     private static boolean isRotating = true;   // for if the coin is rotating or not
 
@@ -27,6 +26,9 @@ public class Coin extends Rectangle {
     }
     private static BufferedImage[] getSprites(BufferedImage spriteSheet, int numSprites) {
         BufferedImage[] sprites = new BufferedImage[numSprites];
+        WIDTH = coinSpriteImage.getWidth()/6;
+        HEIGHT = coinSpriteImage.getHeight();
+        GAP = WIDTH+2;
 
         for(int i = 0; i < numSprites; i++) {
             sprites[i] = spriteSheet.getSubimage(i*WIDTH, 0, WIDTH, HEIGHT);
