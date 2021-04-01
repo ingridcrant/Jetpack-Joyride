@@ -34,7 +34,7 @@ public class JetpackJoyride extends JFrame{
 	
     public static void main(String[] arguments) {
 		JetpackJoyride frame = new JetpackJoyride();
-    }	
+    }
 }
 
 // INTERFACE
@@ -43,13 +43,13 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	 * 
 	 */
     private static Timer myTimer;
-    public static final int WIDTH = 1000, HEIGHT = 750; // width and height of the panel
+    public static final int WIDTH = 1000, HEIGHT = 750;                                         // width and height of the panel
 	public static final int TOPBORDERHEIGHT = 120, BOTTOMBORDERHEIGHT = 100;
-	private static final Image background = new ImageIcon("Images/background.png").getImage(); // background image (the lab)
+	private static final Image background = new ImageIcon("Images/background.png").getImage();  // background image (the lab)
 	private static Image laserBeamImage;
 	private static Rectangle laserBeamRect;
 	private static int backgroundX, backgroundY, reverseBackgroundX, reverseBackgroundY;
-	public static int speedX; // speed of the background
+	public static int speedX;                                                                   // speed of the background
 
 	private static final int LEFT = 0, RIGHT = 1;
 
@@ -69,20 +69,21 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	private String currentStretch;
 
-	private int currentCoins; // current amount of coins (amounts after each game)
-	public static int currentRun; // current distance ran
-	private int longestRun; // longest run distance
-	private String longestRunInfo; // information about the longest run (aka name and distance travelled in the form "name: distance")
+	private int currentCoins;             // current amount of coins (amounts after each game)
+	public static int currentRun;         // current distance ran
+	private int longestRun;               // longest run distance
+	private String longestRunInfo;        // information about the longest run (name and distance travelled in the form "name: distance")
 
-	private int numOfShields; // current number of shields (amounts after each game)
-	private double missileProbability; // the probabilities of a missile/laser appearing
+	private int numOfShields;             // current number of shields (amounts after each game)
+	private double missileProbability;    // the probabilities of a missile/laser appearing
 
 	private String screen;
 	private static boolean isGameOver;
 	private Image startScreen;
-	private static boolean newLongestRunPrompted; // if the player is prompted for their name when they set a new longest run
-	private static String buyShieldsMessage; // the message that appears when the player is trying to buy shields
-	private static int buyShieldMessageFrameCount; // the number of frames the the buy shield message appears for
+	private static boolean newLongestRunPrompted;    // if the player is prompted for their name when they set a new longest run
+	private static String buyShieldsMessage;         // the message that appears when the player is trying to buy shields
+	private static int buyShieldMessageFrameCount;   // the number of frames the the buy shield message appears for
+	
 	private static Rectangle buyShieldRect = new Rectangle(WIDTH/2 + 125, HEIGHT/2 - 130, 200, 100);
 	private static Rectangle restartGameRect = new Rectangle(WIDTH/2 - 300, HEIGHT/2+50, 600, 180);
 
@@ -225,6 +226,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		requestFocus();
 		myTimer.start();
  	}
+
+	// initializes the objects:
 	public void initialize() {
 		speedX = -20;
 		backgroundX = 0;
@@ -307,6 +310,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			e.printStackTrace();
 		  }
 	}
+
 	// gets the distance of the longest run from the "LongestRun.txt" file:
 	public String getLongestRun() {
 		File file = new File("LongestRun.txt");
@@ -342,6 +346,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			e.printStackTrace();
 		}
 	}
+
 	// gets the current number of shields from the "NumOfShields.txt" file:
 	public Integer getNumOfShields() {
 		File file = new File("NumOfShields.txt");
@@ -388,10 +393,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	// adds scientists randomly:
 	public void addScientists() {
-		boolean canSpawn = new Random().nextDouble() < 0.04; // scientists have a 4% chance of appearing
+		boolean canSpawn = new Random().nextDouble() < 0.04;     // scientists have a 4% chance of appearing
 		if(canSpawn) {
-			int randDir = rand.nextInt(2); // chooses a random direction for the scientist to face (left: 0, right: 1)
-			int canCrouch = rand.nextInt(2); // chooses whether the scientist is smart enought to crouch or not (50% chance each)
+			int randDir = rand.nextInt(2);                       // chooses a random direction for the scientist to face (left: 0, right: 1)
+			int canCrouch = rand.nextInt(2);                     // chooses whether the scientist can crouch or not (50% chance)
 			scientists.add(new Scientist(randDir, canCrouch));
 		}
 	}
@@ -407,11 +412,12 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		scientists.removeAll(removedScientists);
 	}
+
 	// adds missiles randomly:
 	public void addMissiles() {
 		boolean canSpawn = new Random().nextDouble() < missileProbability;
 		if(canSpawn && lasers.isEmpty() && missiles.isEmpty()) {
-			int randDir = rand.nextInt(2); // chooses a random direction for the missile to face (left: 0, right: 1)
+			int randDir = rand.nextInt(2);                                   // chooses a random direction for the missile to face (left: 0, right: 1)
 			missiles.add(new Missile(randDir));
 		}
 	}
@@ -460,26 +466,30 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		lasers.removeAll(removedLasers);
 	}
 
+	// adds zappers:
 	public void addZappers() {
-		Zapper[] randFormation = zapperFormations[rand.nextInt(zapperFormations.length)];
+		Zapper[] randFormation = zapperFormations[rand.nextInt(zapperFormations.length)];                        // chooses a random formation from the zapper formations
 		for(Zapper zapper : randFormation) {
 			Zapper newZapper = new Zapper(zapper.getType(), (int) zapper.getX()+WIDTH+20, (int) zapper.getY());
 			zappers.add(newZapper);
 		}
 	}
+	// removes zappers if they are off the screen:
 	public void removeZappers() {
 		ArrayList<Zapper> removedZappers = new ArrayList<Zapper>();
+
 		for(Zapper zapper : zappers) {
 			if(zapper.getX() + zapper.getWidth() <= 0) {
 				removedZappers.add(zapper);
 			}
 		}
+
 		zappers.removeAll(removedZappers);
 	}
 
 	// adds coins:
 	public void addCoins() {
-		Coin[] randFormation = coinFormations[rand.nextInt(coinFormations.length)];
+		Coin[] randFormation = coinFormations[rand.nextInt(coinFormations.length)];        // chooses a random formation from the coin formations (COIN, BARRY, curve, etc.)
 		for(Coin coin: randFormation) {
 			Coin newCoin = new Coin((int) coin.getX()+WIDTH+20, (int) coin.getY()+200);
 			coins.add(newCoin);
@@ -498,6 +508,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		coins.removeAll(removedCoins);
 	}
 
+	// resets the laser beam:
 	public static void resetlaserBeamRect() {
 		laserBeamRect = new Rectangle();
 	}
@@ -517,20 +528,20 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	public void drawScores(Graphics g) {
 		g.setColor(Color.WHITE);
 		g.setFont(myFont.deriveFont(Font.BOLD, 40f));
-		g.drawString(currentRun + "M", 10, 40); // draws the distance of the current run
+		g.drawString(currentRun + "M", 10, 40);                               // draws the distance of the current run
 
 		g.setFont(myFont.deriveFont(Font.BOLD, 20f));
-		g.drawString("NUMBER OF SHIELDS " + numOfShields, WIDTH - 200, 40); // draws the number of shields the player has
+		g.drawString("NUMBER OF SHIELDS " + numOfShields, WIDTH - 200, 40);   // draws the number of shields the player has
 
 		Color silver = new Color(232, 232, 232);
 		g.setColor(silver);
 		g.setFont(myFont.deriveFont(Font.BOLD, 30f));
-		g.drawString("BEST: " + longestRun + "M", 10, 70); // draws the distance of the longest run
+		g.drawString("BEST: " + longestRun + "M", 10, 70);                    // draws the distance of the longest run
 
 		Color gold = new Color(255, 255, 26);
 		g.setColor(gold);
 		g.setFont(myFont.deriveFont(Font.BOLD, 25f));
-		g.drawString(currentCoins + "", 10, 95); // draws the current amount of coins the player has
+		g.drawString(currentCoins + "", 10, 95);                              // draws the current amount of coins the player has
 	}
 	// draws the final scores (shows up on the game over screen):
 	public void drawFinalScores(Graphics g) {
@@ -541,12 +552,12 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		Color gold = new Color(255, 255, 26);
 		g.setColor(gold);
 		g.setFont(myFont.deriveFont(Font.BOLD, 100f));
-		g.drawString(currentRun + "M", WIDTH/2 - 430, HEIGHT/2 - 150); // draws the distance of the player's run
+		g.drawString(currentRun + "M", WIDTH/2 - 430, HEIGHT/2 - 150);          // draws the distance of the player's run
 
-		if(newLongestRun()) { // if the player set a new longest run
+		if(newLongestRun()) {                                                   // if the player set a new longest run
 			g.setColor(Color.BLUE);
 			g.setFont(myFont.deriveFont(Font.BOLD, 30f));
-			g.drawString("NEW BEST", WIDTH/2 - 180, HEIGHT/2 - 250); // draws "new best"
+			g.drawString("NEW BEST", WIDTH/2 - 180, HEIGHT/2 - 250);            // draws "new best"
 		}
 
 		g.setColor(Color.WHITE);
@@ -555,7 +566,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 		g.setColor(gold);
 		g.setFont(myFont.deriveFont(Font.BOLD, 40f));
-		g.drawString(currentCoins + " COINS", WIDTH/2 - 430, HEIGHT/2 - 40); // draws the amount of coins the player collected
+		g.drawString(currentCoins + " COINS", WIDTH/2 - 430, HEIGHT/2 - 40);   // draws the amount of coins the player collected
 	}
 	// draws the leaderboard (aka the player with the longest run):
 	public void drawLeaderBoard(Graphics g) {
@@ -566,8 +577,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		Color gold = new Color(255, 255, 26);
 		g.setColor(gold);
 		g.setFont(myFont.deriveFont(Font.BOLD, 50f));
-		if(longestRunInfo.split(": ")[0].length() > 8) { // if the top scoring player has more than 8 letters in their name
-			g.drawString(longestRunInfo.split(": ")[0].substring(0, 7) + ": " + longestRunInfo.split(": ")[1], WIDTH/2 + 50, HEIGHT/2 - 195); // draws the first 8 letters of the players name and the distance they ran
+		if(longestRunInfo.split(": ")[0].length() > 8) {                                                                                         // if the top scoring player has more than 8 letters in their name
+			g.drawString(longestRunInfo.split(": ")[0].substring(0, 7) + ": " + longestRunInfo.split(": ")[1], WIDTH/2 + 50, HEIGHT/2 - 195);    // draws the first 8 letters of the players name and the distance they ran
 		}
 		else {
 			g.drawString(longestRunInfo, WIDTH/2 + 50, HEIGHT/2 - 195); // draws the player's full name and the distance they ran
@@ -576,18 +587,18 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	// lets the player buy shields:
 	public void buyShield() {
-		if(currentCoins >= 600) { // if the player has enough coins to buy a shield, the player is allowed to buy a shield
+		if(currentCoins >= 600) {      // if the player has enough coins to buy a shield, the player is allowed to buy a shield
 			currentCoins -= 600;
 			numOfShields++;
 			buyShieldsMessage = "You bought a shield! You now have "+numOfShields+" shields and "+currentCoins+" coins left.";
 			setNumOfShields();
 		}
-		else { // the player is not allowed to buy a shield
+		else {                        // the player is not allowed to buy a shield
 			buyShieldsMessage = "Sorry, you don't have enough coins to buy a shield. Shields cost 600 coins!";
 		}
 	}
 
-	// if the player has beat the previous longest run:
+	// for if the player has beat the previous longest run:
 	public boolean newLongestRun() {
 		if(currentRun > longestRun) {
 			return true;
@@ -596,11 +607,11 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	}
 	
     public void move(){
-		if(isGameOver) { // if the game is over
-			if(!barry.hitFloor) { // if barry is on the floor
-				barry.dying(); // barry is dying
+		if(isGameOver) {            // if the game is over
+			if(!barry.hitFloor) {   // if barry is on the floor
+				barry.dying();      // barry is dying
 			} else {
-				speedX *= 0.9999; // slows the background down
+				speedX *= 0.9999;   // slows the background down
 				if(speedX == 0) {
 					screen = "game over";
 					setCoins();
@@ -618,7 +629,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		if(backgroundX <= -WIDTH) backgroundX = reverseBackgroundX+WIDTH;
 		if(reverseBackgroundX <= -WIDTH) reverseBackgroundX = backgroundX + WIDTH;
 
-		boolean barryCollided = false;  // deactivates shield only when barry is not colliding with anything
+		boolean barryCollided = false;      // deactivates shield only when barry is not colliding with anything
 
 		for(Coin coin: coins) {
 			coin.move();
@@ -665,22 +676,24 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		addScientists();
 		for(Scientist scientist : scientists) {
 			scientist.move();
-			if(!scientist.isFainted()) { // if the scientist has not already fainted
+			if(!scientist.isFainted()) {    // if the scientist has not already fainted
 				if(JetpackJoyridePanel.barry.getY() > scientist.getY() - JetpackJoyridePanel.barry.getHeight() && scientist.canCrouch()) { // if Barry is on the same plane as the scientist
-					scientist.crouch(); // the scientist crouches (if they can)
+					scientist.crouch();     // the scientist crouches (if they can)
 				}
 				else {
-					scientist.walk(); // the scientist walks
+					scientist.walk();       // the scientist walks
 				}
 			}
-			if(scientist.intersects(barry) && !scientist.isFainted()) { // if barry hits a scientist
-				scientist.faint(RIGHT); // the scientist faints
+			if(scientist.intersects(barry) && !scientist.isFainted()) {           // if barry hits a scientist
+				scientist.faint(RIGHT);                                           // the scientist faints
 			}
-			if(scientist.intersects(laserBeamRect) && !scientist.isFainted()) {	// if the laser beam hits a scientist
-				scientist.faint(scientist.getHitByLaserFallingDirection()); // the scientist faints in the opposite direction they are walking in
+			if(scientist.intersects(laserBeamRect) && !scientist.isFainted()) {	  // if the laser beam hits a scientist
+				scientist.faint(scientist.getHitByLaserFallingDirection());       // the scientist faints in the opposite direction they are walking in
 			}
 			for(Zapper zapper : zappers) {
-				if(scientist.collidesWith(zapper) && !scientist.isFainted()) {
+				if(scientist.collidesWith(zapper) && !scientist.isFainted()) {    // if a zapper hits a scientists
+
+					// scientist faints in the opposite direction they were walking towards:
 					if(scientist.getDir() == LEFT) {
 						scientist.faint(RIGHT);
 					}
@@ -692,58 +705,58 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			for(Laser[] laserPair : lasers) {
 				if(laserPair[0].isFiring() && laserPair[1].isFiring()){
 					if(scientist.intersects(laserPair[0])) {
-						scientist.faint(scientist.getHitByLaserFallingDirection()); // the scientist faints in the opposite direction they are walking in
+						scientist.faint(scientist.getHitByLaserFallingDirection());   // the scientist faints in the opposite direction they are walking in
 					}
 					else if(scientist.intersects(laserPair[1])) {
-						scientist.faint(scientist.getHitByLaserFallingDirection()); // the scientist faints in the opposite direction they are walking in
+						scientist.faint(scientist.getHitByLaserFallingDirection());   // the scientist faints in the opposite direction they are walking in
 					}
 				}
 			}
 			for(Missile missile : missiles) {
-				if(scientist.intersects(missile)) { // if a missile hits a scientist
-					scientist.faint(missile.getDirection()); // the scientist faints
+				if(scientist.intersects(missile)) {            // if a missile hits a scientist
+					scientist.faint(missile.getDirection());   // the scientist faints
 				}
 			}
 		}
 		removeScientists();
 		if(!isGameOver) {
 			for(Zapper zapper : zappers) {
-				if(barry.collidesWith(zapper)) { // if barry hits a zapper
-					if(!barry.hasShield()) { // if barry doesn't have a shield
-						isGameOver = true; // the game is over
+				if(barry.collidesWith(zapper)) {                                   // if barry hits a zapper
+					if(!barry.hasShield()) {                                       // if barry doesn't have a shield
+						isGameOver = true;                                         // the game is over
 						SoundPlayer.playSoundEffect(SoundPlayer.barryZapped, 0);
 						SoundPlayer.playSoundEffect(SoundPlayer.barryHurt, 0);
 					}
 					barryCollided = true;
-					barry.gotHit(); // barry got hit
+					barry.gotHit();        // barry got hit
 				}
 			}
 	
 			for(Laser[] laserPair : lasers) {
 				if(laserPair[0].isFiring() && laserPair[1].isFiring()) {
-					if(barry.intersects(laserBeamRect) || barry.intersects(laserPair[0]) || barry.intersects(laserPair[1])) { // if barry hits a laser
-						if(!barry.hasShield()) { // if barry doesn't have a shield
-							isGameOver = true; // the game is over
+					if(barry.intersects(laserBeamRect) || barry.intersects(laserPair[0]) || barry.intersects(laserPair[1])) {   // if barry hits a laser
+						if(!barry.hasShield()) {                                                                                // if barry doesn't have a shield
+							isGameOver = true;                                                                                  // the game is over
 							SoundPlayer.playSoundEffect(SoundPlayer.barryHurt, 0);
 						}
 						barryCollided = true;
-						barry.gotHit(); // barry got hit
+						barry.gotHit();                                                                                         // barry got hit
 					}
 				}
 			}
 			for(Missile missile: missiles) {
 				if(missile.isFiring()) {
-					if(barry.intersects(missile)) { // if barry hits a missile
-						if(!barry.hasShield()) { // if barry doesn't have a shield
-							isGameOver = true; // the game is over
+					if(barry.intersects(missile)) {                                  // if barry hits a missile
+						if(!barry.hasShield()) {                                     // if barry doesn't have a shield
+							isGameOver = true;                                       // the game is over
 							SoundPlayer.playSoundEffect(SoundPlayer.barryHurt, 0);
 						}
 						barryCollided = true;
-						barry.gotHit(); // barry got hit
+						barry.gotHit();                                              // barry got hit
 					}
 				}
 			}
-			if(!barryCollided && barry.isHit() && barry.hasShield()) { // the frame right after barry is hit
+			if(!barryCollided && barry.isHit() && barry.hasShield()) {   // the frame right after barry is hit
 				barry.resetHit();
 				barry.deactivateShield();
 				numOfShields--;
@@ -762,13 +775,13 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		if(currentRun % 80 == 0 && currentRun != 0) {
 			double randSelection = new Random().nextDouble();
 
-			if(randSelection < 0.4) { // coins have a 40% chance of appearing
+			if(randSelection < 0.45) {                                // coins have a 45% chance of appearing
 				addCoins();
 			}
-			else if(randSelection >= 0.4 && randSelection < 0.8) { // zappers have a 40% chance of appearing
+			else if(randSelection >= 0.45 && randSelection < 0.9) {   // zappers have a 45% chance of appearing
 				addZappers();
 			}
-			else { // lasers have a 20% chance of appearing
+			else {                                                    // lasers have a 10% chance of appearing
 				int randLaserAmount = rand.nextInt(2)+1;
 				for(int i = 0; i < randLaserAmount; i++) {
 					addLaser();
@@ -780,10 +793,10 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	@Override
     public void paint(Graphics g) {
 		if(screen.equals("start")) {
-			g.drawImage(startScreen, 0, 0, null); // draws the starting screen
+			g.drawImage(startScreen, 0, 0, null);                        // draws the starting screen
 		}
 		else if(screen.equals("game") || screen.equals("game over")) {
-			g.drawImage(background, backgroundX, backgroundY, null); // draws the background
+			g.drawImage(background, backgroundX, backgroundY, null);     // draws the background
 			g.drawImage(background, reverseBackgroundX+WIDTH, reverseBackgroundY, -WIDTH, HEIGHT, null);
 			
 			for(Coin coin: coins) {
@@ -817,7 +830,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 					Point2D firingEndPoint1 = laserPair[0].getFiringEndPoint();
 					Point2D firingEndPoint2 = laserPair[1].getFiringEndPoint();
 
-					laserBeamImage = laserBeamImage.getScaledInstance((int) Math.abs(firingEndPoint1.getX() - firingEndPoint2.getX())+3, laserBeamImage.getHeight(null), Image.SCALE_DEFAULT);			// the +3 is there to fill in some pixels since the scaling isn't perfect
+					laserBeamImage = laserBeamImage.getScaledInstance((int) Math.abs(firingEndPoint1.getX() - firingEndPoint2.getX())+3, laserBeamImage.getHeight(null), Image.SCALE_DEFAULT);		// the +3 is there to fill in some pixels since the scaling isn't perfect
 					g.drawImage(laserBeamImage, (int) Math.min(firingEndPoint1.getX(), firingEndPoint2.getX()), (int) firingEndPoint1.getY(), null);
 				}
 			}
@@ -839,35 +852,37 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				g.fillRect(0, 0, WIDTH, HEIGHT);
 
 				drawFinalScores(g);
-				
-				// prompts the player for their name ONCE if the player has set a new longest run
-				if(newLongestRun() && !newLongestRunPrompted) {
-					newLongestRunPrompted = true;
+
+				if(newLongestRun() && !newLongestRunPrompted) {   // if the player set a new longest run
+					newLongestRunPrompted = true;                 // player is prompted for their name
 					setLongestRun();
 					longestRunInfo = getLongestRun();
 				}
-				if(!longestRunInfo.equals("nobody: 0")) {
+				if(!longestRunInfo.equals("nobody: 0")) {         // does not draw leaderboard if a player has not set a longest run yet
 					drawLeaderBoard(g);
 				}
 
-				g.setColor(Color.BLUE);
-
 				Graphics2D g2d = (Graphics2D) g;
-				g2d.fill(buyShieldRect);
-				g2d.fill(restartGameRect);
 
+				// draws the "buy shields" button:
+				g.setColor(Color.BLUE);
+				g2d.fill(buyShieldRect);
 				Color gold = new Color(255, 255, 26);
 				g.setColor(gold);
 				g.setFont(myFont.deriveFont(Font.BOLD, 20f));
 				g.drawString("600 COINS", WIDTH/2 + 180, HEIGHT/2 - 50);
-
 				g.setColor(Color.WHITE);
 				g.setFont(myFont.deriveFont(Font.BOLD, 30f));
 				g.drawString("BUY SHIELDS", WIDTH/2 + 145, HEIGHT/2 - 80);
 
+				// draws the "restart game" button:
+				g.setColor(Color.BLUE);
+				g2d.fill(restartGameRect);
+				g.setColor(Color.WHITE);
 				g.setFont(myFont.deriveFont(Font.BOLD, 80f));
 				g.drawString("RESTART GAME", WIDTH/2 - 245, HEIGHT/2 + 170);
 
+				// draws the buy shield message for 20 frames:
 				if(buyShieldMessageFrameCount > 0) {
 					buyShieldMessageFrameCount++;
 					if(buyShieldMessageFrameCount == 20) {
@@ -877,7 +892,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				}
 				
 				g.setFont(myFont.deriveFont(Font.BOLD, 25f));
-				g.drawString(buyShieldsMessage, 150, HEIGHT/2 + 30);
+				g.drawString(buyShieldsMessage, 150, HEIGHT/2 + 30);   // draws the buy shield message
 			}
 		}
 	}
@@ -892,11 +907,11 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	public void	mouseReleased(MouseEvent e){
 		if(screen == "game over") {
 			mouse = new Point(e.getX(),e.getY());
-			if(buyShieldRect.contains(mouse)) {
+			if(buyShieldRect.contains(mouse)) {     // if the player clicks on the "buy shield" button
 				buyShieldMessageFrameCount++;
 				buyShield();
 			}
-			if(restartGameRect.contains(mouse)) {
+			if(restartGameRect.contains(mouse)) {   // if the player clicks on the "restart game" button
 				initialize();
 				screen = "game";
 			}
@@ -905,11 +920,11 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	}
 	
 	public void	keyPressed(KeyEvent e) {
-		if (screen.equals("start") && e.getKeyCode() == KeyEvent.VK_SPACE) {
+		if (screen.equals("start") && e.getKeyCode() == KeyEvent.VK_SPACE) {                                            // player presses space on starting screen to play
 			SoundPlayer.playSoundEffect(SoundPlayer.background, Clip.LOOP_CONTINUOUSLY);
             screen = "game";
         }
-		if (screen.equals("game") && e.getKeyCode() == KeyEvent.VK_ENTER && numOfShields > 0 && !barry.hasShield()) {
+		if (screen.equals("game") && e.getKeyCode() == KeyEvent.VK_ENTER && numOfShields > 0 && !barry.hasShield()) {   // player presses enter within the game to activate their shield (if they have any)
 			barry.activateShield();
 		}
 

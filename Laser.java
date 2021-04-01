@@ -30,11 +30,11 @@ public class Laser extends Rectangle {
         width = laser.getWidth();
         height = laser.getHeight();
 
-        isMoving = true;
-        atPosition = false;
-        firing = false;
-        cooling = false;
-        off = false;
+        isMoving = true;      // the laser is moving
+        atPosition = false;   // the laser is not at position yet
+        firing = false;       // the laser is not firing yet
+        cooling = false;      // the laser is not firing yet
+        off = false;          // the laser is not off yet
 
         center = new Point();
 
@@ -69,6 +69,8 @@ public class Laser extends Rectangle {
     public Point2D getLoadingLineEndPoint() {
         return loadingLineEndPoint;
     }
+
+    // Getter methods:
     public boolean isAtPosition() {
         return atPosition;
     }
@@ -78,6 +80,7 @@ public class Laser extends Rectangle {
     public boolean isOff() {
         return off;
     }
+    
     public void move() {
         if(dir == RIGHT && isMoving && frameNum == FRAMESBEFOREPOSITION) {
             isMoving = false;
