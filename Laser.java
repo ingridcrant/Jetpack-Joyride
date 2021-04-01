@@ -28,7 +28,7 @@ public class Laser extends Rectangle {                                          
     private Point2D.Double loadingLineEndPoint;                                                             // stores one endpoint of the line appearing during warning state of the laser, shows user where the laser beam is located prior to laser firing
 
     private Point center;                                                                                   // center position of the laser
-    private static final int WIDTH = laser.getWidth(null), HEIGHT = laser.getHeight(null);                   // width and height of the laser
+    private static final int WIDTH = laser.getWidth(null), HEIGHT = laser.getHeight(null);                  // width and height of the laser
     private int dir;                                                                                        // direction of laser during moving state
 
     public Laser(int ddir, int yy) {
@@ -109,7 +109,7 @@ public class Laser extends Rectangle {                                          
             firing = false;
             cooling = true;
             frameNum = 0;                                                                                   // reset frame number
-            JetpackJoyridePanel.resetlaserBeamRect();                                                       // reset laser beam rectangle so no collisions happen when the laser isn't firing
+            JetpackJoyridePanel.resetlaserBeamRects();                                                       // reset laser beam rectangle so no collisions happen when the laser isn't firing
         }
         else if(cooling && frameNum == FRAMESBEFOREOFF) {
             cooling = false;

@@ -59,7 +59,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private Random rand = new Random();
 
 	private static Image laserBeamImage;
-	private static Rectangle laserBeamRect;
+	private static ArrayList<Rectangle> laserBeamRects;
 	
 	public static Barry barry;
 	private ArrayList<Zapper> zappers;
@@ -249,7 +249,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		scientists = new ArrayList<Scientist>();
 		missiles = new ArrayList<Missile>();
 		lasers = new ArrayList<Laser[]>();
-		laserBeamRect = new Rectangle();
+		laserBeamRects = new ArrayList<Rectangle>();
 
 		currentStretch = "";												// there are no obstacles when the game starts
 		currentCoins = getCoins();											// gets the number of coins from the coins file
@@ -512,8 +512,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	}
 
 	// resets the laser beam:
-	public static void resetlaserBeamRect() {
-		laserBeamRect = new Rectangle();
+	public static void resetlaserBeamRects() {
+		laserBeamRects.clear();
 	}
 
 	// flips images horizontally:
@@ -667,7 +667,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				Point2D firingEndPoint2 = laserPair[1].getFiringEndPoint();
 
 				laserBeamImage = laserBeamImage.getScaledInstance((int) Math.abs(firingEndPoint1.getX() - firingEndPoint2.getX())+3, laserBeamImage.getHeight(null), Image.SCALE_DEFAULT);					// the +3 is there to fill in some pixels since the scaling isn't perfect
-				laserBeamRect = new Rectangle((int) Math.min(firingEndPoint1.getX(), firingEndPoint2.getX()), (int) firingEndPoint1.getY(), laserBeamImage.getWidth(null), laserBeamImage.getHeight(null));
+				Rectangle laserBeamRect = new Rectangle((int) Math.min(firingEndPoint1.getX(), firingEndPoint2.getX()), (int) firingEndPoint1.getY(), laserBeamImage.getWidth(null), laserBeamImage.getHeight(null));
+				laserBeamRects.add(laserBeamRect);
 			}
 		}
 		removeLasers();
@@ -690,9 +691,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			if(scientist.intersects(barry) && !scientist.isFainted()) {				// if barry hits a scientist
 				scientist.faint(RIGHT);												// the scientist faints
 			}
-			if(scientist.intersects(laserBeamRect) && !scientist.isFainted()) {		// if the laser beam hits a scientist
-				scientist.faint(scientist.getHitByLaserFallingDirection());			// the scientist faints in the opposite direction they are walking in
-			}
 			for(Zapper zapper : zappers) {
 				if(scientist.collidesWith(zapper) && !scientist.isFainted()) {		// if a zapper hits a scientists
 
@@ -712,6 +710,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 					}
 					else if(scientist.intersects(laserPair[1])) {
 						scientist.faint(scientist.getHitByLaserFallingDirection());		// the scientist faints in the opposite direction they are walking in
+					}
+					if(scientist.intersects(laserBeamRects.get(lasers.indexOf(laserPair))) && !scientist.isFainted()) {		// if the laser beam hits a scientist
+						scientist.faint(scientist.getHitByLaserFallingDirection());			// the scientist faints in the opposite direction they are walking in
 					}
 				}
 			}
@@ -737,7 +738,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	
 			for(Laser[] laserPair : lasers) {
 				if(laserPair[0].isFiring() && laserPair[1].isFiring()) {
-					if(barry.intersects(laserBeamRect) || barry.intersects(laserPair[0]) || barry.intersects(laserPair[1])) {   // if barry hits a laser
+					if(barry.intersects(laserBeamRects.get(lasers.indexOf(laserPair))) || barry.intersects(laserPair[0]) || barry.intersects(laserPair[1])) {   // if barry hits a laser
 						if(!barry.hasShield()) {                                                                                // if barry doesn't have a shield
 							isGameOver = true;                                                                                  // the game is over
 							SoundPlayer.playSoundEffect(SoundPlayer.barryHurt, 0);
