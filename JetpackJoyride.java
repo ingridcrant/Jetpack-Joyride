@@ -34,11 +34,11 @@ public class JetpackJoyride extends JFrame{
 	
     public static void main(String[] arguments) {
 		JetpackJoyride frame = new JetpackJoyride();
-    }
+    }	
 }
 
 // INTERFACE
-class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListener, KeyListener{
+class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListener, KeyListener {
 	/**
 	 * 
 	 */
@@ -430,7 +430,18 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	// adds lasers:
 	public void addLaser() {
-		int randY = ((int) (rand.nextInt(650-100)+100)/10)*10;
+		boolean validLaserY = false;
+		int[] randYList = {120, 320, 520};
+		int randY = 0;
+		while(!validLaserY) {
+			validLaserY = true;
+			randY = randYList[rand.nextInt(3)];
+			for(Laser[] laserPair : lasers) {
+				if(laserPair[0].getY() == randY && laserPair[1].getY() == randY) {
+					validLaserY = false;
+				}
+			}
+		}
 		Laser[] randLaserPair = {new Laser(Laser.RIGHT, randY), new Laser(Laser.LEFT, randY)};
 		lasers.add(randLaserPair);
 	}
@@ -458,13 +469,11 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	}
 	public void removeZappers() {
 		ArrayList<Zapper> removedZappers = new ArrayList<Zapper>();
-
 		for(Zapper zapper : zappers) {
 			if(zapper.getX() + zapper.getWidth() <= 0) {
 				removedZappers.add(zapper);
 			}
 		}
-
 		zappers.removeAll(removedZappers);
 	}
 
@@ -630,12 +639,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		}
 		removeMissiles();
 
-		if(currentStretch.equals("lasers")) {
-			if(lasers.size() < 3) {
-				addLaser();
-			}
-		}
-
 		for(Zapper zapper : zappers) {
 			zapper.move();
 		}
@@ -714,8 +717,6 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 					barryCollided = true;
 					barry.gotHit(); // barry got hit
 				}
-	
-				zapper.move();
 			}
 	
 			for(Laser[] laserPair : lasers) {
@@ -761,14 +762,17 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 		if(currentRun % 80 == 0 && currentRun != 0) {
 			double randSelection = new Random().nextDouble();
 
-			if(randSelection < 0.45) { // coins have a 45% chance of appearing
+			if(randSelection < 0.4) { // coins have a 40% chance of appearing
 				addCoins();
 			}
-			else if(randSelection >= 0.45 && randSelection < 0.9) { // zappers have a 45% chance of appearing
+			else if(randSelection >= 0.4 && randSelection < 0.8) { // zappers have a 40% chance of appearing
 				addZappers();
 			}
-			else { // lasers have a 10% chance of appearing
-				addLaser();
+			else { // lasers have a 20% chance of appearing
+				int randLaserAmount = rand.nextInt(2)+1;
+				for(int i = 0; i < randLaserAmount; i++) {
+					addLaser();
+				}
 			}
 		}
     }
