@@ -1,3 +1,9 @@
+/*
+ * SoundPlayer.java
+ * Ingrid and Isabel Crant
+ * Plays sound effects found in the Jetpack Joyride game. Loads in .wav files and plays it a certain number of times.
+*/
+
 import java.io.IOException;
 import java.net.URL;
 import javax.sound.sampled.*;
@@ -30,9 +36,9 @@ public class SoundPlayer {
 
 			if(soundToPlay == background){
 				FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-				gainControl.setValue(-3.0f); // Reduce volume by 3 decibels.
+				gainControl.setValue(-3.0f); 																// reduces volume of background music by 3 decibels.
 			}
-            clip.loop(loopNum);
+            clip.loop(loopNum);													// loops the clip loopNum times
 			clip.start();														// play sound
 			
 			clip.addLineListener(new LineListener() {							// kill sound thread

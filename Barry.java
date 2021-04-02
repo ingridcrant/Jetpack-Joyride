@@ -1,3 +1,9 @@
+/*
+ * Barry.java
+ * Ingrid and Isabel Crant
+ * Main character and protagonist of Jetpack Joyride controlled by the the user. He flies through the lab using his jetpack and collects coins while dodging obstacles.
+*/
+
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.*;
@@ -20,10 +26,9 @@ public class Barry extends Rectangle {
     private boolean rising, falling, walking;         // Barry's phases: rising, falling, or walking
     private boolean shield, hit;                      // for if barry has a shield or is hit
     public boolean tumbling = false, dying = false;   // for if barry is tumbling or dying
-    private static boolean isMoving = true;
 
-    private static int maxWalkingPoseCount = 4;
-    private int walkingPoseCount = 0;
+    private static int maxWalkingPoseCount = 4;       // tells when to reset walking pose count back to 0
+    private int walkingPoseCount = 0;                 // tells when to switch barry's legs when walking (0, 1 - one leg forward, 2, 3 - other leg forward)
 
     private int width, height;
     private static final int X = JetpackJoyridePanel.WIDTH/3;     // Barry's x-coordinate
@@ -40,7 +45,7 @@ public class Barry extends Rectangle {
     public Barry(String picName) {
         super();
 
-        walking = true;   // Barry is walking
+        walking = true;                                           // Barry is walking
         falling = false;
         rising = false;
 
@@ -70,21 +75,18 @@ public class Barry extends Rectangle {
     public void gotHit() {
         hit = true;
     }
-    public static void stopMoving() {
-        isMoving = false;
-    }
     public int getDyingYSpeed() {
         return (int) fallingYSpeed;
     }
-    protected Rectangle getCollision(Rectangle rect2) {
-        Area a1 = new Area(this);
-        Area a2 = new Area(rect2);
-        a1.intersect(a2);
-        return a1.getBounds();
+    protected Rectangle getCollision(Rectangle rect2) {   // finds the area of intersection between barry and rect2
+        Area a1 = new Area(this);                         // area of barry
+        Area a2 = new Area(rect2);                        // area of rect2
+        a1.intersect(a2);                                 // finds the area of intersection and assigns it to a1
+        return a1.getBounds();                            // returns the bounding rectangle of a1
     }
     public BufferedImage getImage() {
         if(walking) {
-            if(walkingPoseCount > maxWalkingPoseCount/2) {
+            if(walkingPoseCount > maxWalkingPoseCount/2) {   // one leg forward
                 if(shield) {
                     return barryWalkingShield1;
                 }
@@ -92,7 +94,7 @@ public class Barry extends Rectangle {
                     return barryWalking1;
                 }
             }
-            else {
+            else {                                           // other leg forward
                 if(shield) {
                     return barryWalkingShield2;
                 }
@@ -114,6 +116,8 @@ public class Barry extends Rectangle {
             else {
                 return barryFalling;
             }
+
+        // barry does not have a shield if he is tumbling/dying:
         } else if (tumbling) {
             return barryForwards;
         } else {
@@ -161,22 +165,21 @@ public class Barry extends Rectangle {
 
     // for when Barry is dying:
     public void dying() {
-        rising = false; falling = false; walking = false; tumbling = true;                    // Barry tumbles
-        
-        y += fallingYSpeed;
-
-        accelerate(0, GRAVITY);                                                               // gravity accelerates the object downwards each tick
-        if(y >= JetpackJoyridePanel.HEIGHT-height-JetpackJoyridePanel.BOTTOMBORDERHEIGHT) {   // if Barry is on or above the floor of the lab
+        if(y < JetpackJoyridePanel.HEIGHT-height-JetpackJoyridePanel.BOTTOMBORDERHEIGHT) {    // if barry is above the floor
+            rising = false; falling = false; walking = false; tumbling = true;                // Barry tumbles
+            y += fallingYSpeed;
+            accelerate(0, GRAVITY);                                                           // gravity accelerates barry downwards
+        }
+        else {                                                                                // if barry is on or below the floor of the lab
             playBarrySlidingSound(); 
 
-            tumbling = false; dying = true;
+            rising = false; falling = false; walking = false; tumbling = false; dying = true;  // barry is dying (he slides on the floor unconscious)
 
-            y = JetpackJoyridePanel.HEIGHT-height-JetpackJoyridePanel.BOTTOMBORDERHEIGHT;
+            y = JetpackJoyridePanel.HEIGHT-height-JetpackJoyridePanel.BOTTOMBORDERHEIGHT;     // change barry's y-position to be right on the floor
             setLocation(X, y);
-            hitFloor = true;
+            hitFloor = true;                                                                  // barry hit the floor
         }
-        fallingYSpeed = Math.ceil(fallingYSpeed);
-        setBounds(X, y, getImage().getWidth(), getImage().getHeight());
+        setBounds(X, y, getImage().getWidth(), getImage().getHeight());                       // update position, width, and height of barry rectangle
     }
 
     // plays the sound of Barry sliding on the floor:
@@ -189,67 +192,53 @@ public class Barry extends Rectangle {
 
     // checks if Barry has collided with a Zapper:
     public boolean collidesWith(Zapper zapper) {
-        if (intersects(zapper)) {                              // checks if the boundaries intersect
-            Rectangle intersectBounds = getCollision(zapper);  // calculates the collision overlay
-            if (!intersectBounds.isEmpty()) {
-                // checks all the pixels in the collision overlay to determine
-                // if there are any non-alpha pixel collisions...
+        if (intersects(zapper)) {                                                                                       // checks if the boundaries intersect
+            Rectangle intersectBounds = getCollision(zapper);                                                           // calculates the intersecting area of the collision
+            if (!intersectBounds.isEmpty()) {                                                                           // if the intersection isn't empty, we have to check pixels to for a collision
+                // iterate through all the pixels of the intersecting area
                 for (int x = intersectBounds.x; x < intersectBounds.x + intersectBounds.width; x++) {
                     for (int y = intersectBounds.y; y < intersectBounds.y + intersectBounds.height; y++) {
-                        int barryPixel = getImage().getRGB(x - (int) getX(), y - (int) getY());
-                        int zapperPixel = zapper.getImage().getRGB(x - (int)zapper.getX(), y - (int)zapper.getY());
+                        int barryPixel = getImage().getRGB(x - (int) getX(), y - (int) getY());                         // colour of barry's image pixel at that pixel
+                        int zapperPixel = zapper.getImage().getRGB(x - (int)zapper.getX(), y - (int)zapper.getY());     // colour of zapper's image pixel at that pixel
                         
-                        // 255 is completely transparent, you might consider using something
-                        // a little less absolute, like 225, to give you a sligtly
-                        // higher hit right, for example...
-                        if (barryPixel != BLANK && zapperPixel != BLANK) {
-                            return true;
+                        if (barryPixel != BLANK && zapperPixel != BLANK) {                                              // if both barry's and the zapper's pixels aren't transparent
+                            return true;                                                                                // there is an intersection between barry and the zapper
                         }
                     }
                 }
             }
         }
-        return false;
+        return false;                                                                                                   // didn't intersect or didn't find any colliding pixels
     }
-
-    /**
-     * Test if a given x/y position of the images contains transparent
-     * pixels or not...
-     * @param x
-     * @param y
-     * @return 
-     */
 
     public void draw(Graphics g) {
         if(walking) {
-            if(isMoving) {
-                walkingPoseCount++;
-            }
-            if(walkingPoseCount > maxWalkingPoseCount/2) {
+            walkingPoseCount++;
+            if(walkingPoseCount > maxWalkingPoseCount/2) {                                                                                                                           // one leg forward
                 setBounds(X, y, barryWalking1.getWidth(null), barryWalking1.getHeight(null));
                 if(shield) {
-                    g.drawImage(barryWalkingShield1, X - barryWalkingShield1.getWidth()/2 + (int)getWidth()/2, y - barryWalkingShield1.getHeight()/2 + (int)getHeight()/2, null);
+                    g.drawImage(barryWalkingShield1, X - barryWalkingShield1.getWidth()/2 + (int)getWidth()/2, y - barryWalkingShield1.getHeight()/2 + (int)getHeight()/2, null);    // draws barry with a shield so that it's centered at the same point as barry without a shield
                 }
                 else {
                     g.drawImage(barryWalking1, X, y, null);
                 }
             }
-            else {
+            else {                                                                                                                                                                   // other leg forward
                 setBounds(X, y, barryWalking2.getWidth(null), barryWalking2.getHeight(null));
                 if(shield) {
-                    g.drawImage(barryWalkingShield2, X - barryWalkingShield2.getWidth()/2 + (int)getWidth()/2, y - barryWalkingShield2.getHeight()/2 + (int)getHeight()/2, null);
+                    g.drawImage(barryWalkingShield2, X - barryWalkingShield2.getWidth()/2 + (int)getWidth()/2, y - barryWalkingShield2.getHeight()/2 + (int)getHeight()/2, null);    // draws barry with a shield so that it's centered at the same point as barry without a shield
                 }
                 else {
                     g.drawImage(barryWalking2, X, y, null);
                 }
             }
-            if(walkingPoseCount > maxWalkingPoseCount) {
+            if(walkingPoseCount > maxWalkingPoseCount) {                // resets walking pose count
                 walkingPoseCount = 0;
             }
         } else if (rising) {
             setBounds(X, y, barryRising.getWidth(null), barryWalking2.getHeight(null));
             if(shield) {
-                g.drawImage(barryRisingShield, X - barryRisingShield.getWidth()/2 + (int)getWidth()/2, y - barryRisingShield.getHeight()/2 + (int)getHeight()/2, null);
+                g.drawImage(barryRisingShield, X - barryRisingShield.getWidth()/2 + (int)getWidth()/2, y - barryRisingShield.getHeight()/2 + (int)getHeight()/2, null);             // draws barry with a shield so that it's centered at the same point as barry without a shield
             }
             else {
                 g.drawImage(barryRising, X, y, null);
@@ -257,12 +246,13 @@ public class Barry extends Rectangle {
         } else if (falling) {
             setBounds(X, y, barryFalling.getWidth(null), barryWalking2.getHeight(null));
             if(shield) {
-                g.drawImage(barryFallingShield, X - barryFallingShield.getWidth()/2 + (int)getWidth()/2, y - barryFallingShield.getHeight()/2 + (int)getHeight()/2, null);
+                g.drawImage(barryFallingShield, X - barryFallingShield.getWidth()/2 + (int)getWidth()/2, y - barryFallingShield.getHeight()/2 + (int)getHeight()/2, null);          // draws barry with a shield so that it's centered at the same point as barry without a shield
             }
             else {
                 g.drawImage(barryFalling, X, y, null);
             }
         } else if(tumbling) {
+            // rotates barry:
             AffineTransform identity = new AffineTransform();
 
             Graphics2D g2d = (Graphics2D)g;
@@ -272,8 +262,8 @@ public class Barry extends Rectangle {
             trans.rotate(Math.toRadians(barryRotationAngle));
             g2d.drawImage(getImage(), trans, null);
 
-            barryRotationAngle += 10;
-            barryRotationAngle = barryRotationAngle % 360;
+            barryRotationAngle += 10;                                                                           // rotates barry 10 more degrees to the right every frame
+            barryRotationAngle = barryRotationAngle % 360;                                                      // keeps barry's angle of rotation between 0 and 360
         } else {
             g.drawImage(barryDead, X, y, null);
         }

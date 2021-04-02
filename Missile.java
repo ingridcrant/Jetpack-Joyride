@@ -1,18 +1,22 @@
+/*
+ * Missile.java
+ * Ingrid and Isabel Crant
+ * An obstacle used within the Jetpack Joyride game. A missile targets Barry off screen, then fires towards him. The missile causes Barry to die and scientists to faint if they are hit.
+*/
+
 import java.awt.*;
 import java.awt.image.*;
 
 public class Missile extends Rectangle {
     private static final int LEFT = 0, RIGHT = 1;
-    private static final int MAXFRAMESBEFOREFIRING = 15;
-    private static final int MAXFRAMESBEFOREWARNING = 10;
-    // private static final int MISSILESPEED = 50;
+    private static final int MAXFRAMESBEFOREFIRING = 15, MAXFRAMESBEFOREWARNING = 10;   // number of frames missile needs to stay in current state before moving onto next state
 
     private int x, y;
     private int width, height;
     private int dir;
-    private static final int GAPFROMEDGE = 5;
+    private static final int GAPFROMEDGE = 5;                             // the distance the signals (targeting and warning) are from the edge of the screen
 
-    private boolean warning, targeting, firing;   // booleans for the missile's phases: targeting, warning, or firing
+    private boolean warning, targeting, firing;                           // booleans for the missile's phases: targeting, warning, or firing
 
     private int currentFrames = 0;
 
@@ -65,16 +69,16 @@ public class Missile extends Rectangle {
             warn();                                         // warns Barry
         }
         else if(currentFrames == MAXFRAMESBEFOREFIRING) {
-            fire();                                         // fires toward Barry
+            fire();                                         // fires missile toward Barry
         }
 
         if(firing) {                                   // if the missile is firing
             int dx;
             if(dir == LEFT) {                          // if the missile is facing left
-                dx = 3*JetpackJoyridePanel.speedX;     // moves the missile left
+                dx = 3*JetpackJoyridePanel.speedX;     // moves the missile to the left with the background speed
             }
             else {                                     // if the missile is facing right
-                dx = (-2)*JetpackJoyridePanel.speedX;  // moves the missile right
+                dx = (-2)*JetpackJoyridePanel.speedX;  // moves the missile to the right against the background speed
             }
             x += dx;
         }
@@ -94,23 +98,20 @@ public class Missile extends Rectangle {
         }
         setBounds(x, y, width, height);
         
-        warning = false;
-        targeting = false;
-        firing = true;
+        warning = false; targeting = false; firing = true;          // the missile is firing
 
-        SoundPlayer.playSoundEffect(SoundPlayer.missileLaunch, 0);
+        SoundPlayer.playSoundEffect(SoundPlayer.missileLaunch, 0);  // plays missile launch sound once
     }
     // activates the warning signal:
     public void warn() {
-        warning = true;
-        targeting = false;
-        firing = false;
+        warning = true; targeting = false; firing = false;          // the missile is warning
 
-        SoundPlayer.playSoundEffect(SoundPlayer.missileWarning, 0);
+        SoundPlayer.playSoundEffect(SoundPlayer.missileWarning, 0); // plays missile warning sound once
     }
 
     public void draw(Graphics g) {
         if(warning) {
+            // draws the warning signal centered based on the targeting signal
             g.drawImage(warningPic, x - warningPic.getWidth()/2 + targetingPic.getWidth()/2, y - warningPic.getHeight()/2 + targetingPic.getHeight()/2, null);
         }
         if(targeting) {

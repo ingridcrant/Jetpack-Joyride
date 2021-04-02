@@ -1,3 +1,9 @@
+/*
+ * Scientist.java
+ * Ingrid and Isabel Crant
+ * Harmless side characters mainly used for aesthetic purposes in the Jetpack Joyride game. They faint when they touch an obstacle or if Barry passes by them. Some crouch to avoid Barry and dumber ones keep walking.
+*/
+
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.*;
@@ -20,10 +26,11 @@ public class Scientist extends Rectangle {
     private static boolean isMoving = true;
     private boolean walking, crouching, fainting;  // the scientist's different phases: walking, crouching, fainting
     private boolean flipped = false;               // if the scientist's image needs to be flipped upside down
-    private boolean crouch = false;
+    private boolean isAbleToCrouch = false;
     private boolean canPlayFaintingSound = true;
-    private static int maxWalkingPoseCount = 4;
-    private int walkingPoseCount = 0;
+
+    private static int maxWalkingPoseCount = 4;    // tells when to reset walking pose count back to 0
+    private int walkingPoseCount = 0;              // tells when to switch barry's legs when walking (0, 1 - one leg forward, 2, 3 - other leg forward)
 
     public Scientist(int ddir, int ccrouch) {
         super();
@@ -35,7 +42,7 @@ public class Scientist extends Rectangle {
 
         // only allows some of the scientist to crouch:
         if(ccrouch == 0) {
-            crouch = true;
+            isAbleToCrouch = true;
         }
 
         if(dir == RIGHT) {
@@ -57,7 +64,7 @@ public class Scientist extends Rectangle {
     }
 
     // Getter and setter methods:
-    public int getHitByLaserFallingDirection() {
+    public int getHitByLaserFallingDirection() {   // if the scientist hits a laser, they fall in the opposite direction
         if(dir == RIGHT) {
             return LEFT;
         }
@@ -75,31 +82,26 @@ public class Scientist extends Rectangle {
         return a1.getBounds();
     }
     public void crouch() { // makes scientist crouch
-        walking = false;
-        crouching = true;
-        fainting = false;
+        walking = false; crouching = true; fainting = false;
     }
     public void walk() { // makes scientist walk
-        walking = true;
-        crouching = false;
-        fainting = false;
+        walking = true; crouching = false; fainting = false;
     }
     public void faint(int direction) { // makes scientist faint
         if(dir == direction) {
             flipped = true;
         }
-        walking = false;
-        crouching = false;
-        fainting = true;
+
+        walking = false; crouching = false; fainting = true;
 
         playFaintingSound();
     }
     public BufferedImage getImage() {
         if(walking) {
-            if(walkingPoseCount > maxWalkingPoseCount/2) {
+            if(walkingPoseCount > maxWalkingPoseCount/2) {   // one leg forward
                 return scientistWalking1;
             }
-            else {
+            else {                                           // other leg forward
                 return scientistWalking2;
             }
         } else if (crouching) {
@@ -117,7 +119,7 @@ public class Scientist extends Rectangle {
         return fainting;
     }
     public boolean canCrouch() {
-        return crouch;
+        return isAbleToCrouch;
     }
     public static void stopMoving() {
         isMoving = false;
@@ -132,8 +134,8 @@ public class Scientist extends Rectangle {
     }
 
     public boolean collidesWith(Zapper zapper) {
-        if (intersects(zapper)) {                              // checks if the boundaries intersect
-            Rectangle intersectBounds = getCollision(zapper);  // calculates the collision overlay
+        if (intersects(zapper)) {                                                                                     // checks if the boundaries intersect
+            Rectangle intersectBounds = getCollision(zapper);                                                         // calculates the collision overlay
             if (!intersectBounds.isEmpty()) {
                 // Check all the pixels in the collision overlay to determine
                 // if there are any non-alpha pixel collisions...

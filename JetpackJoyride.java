@@ -1,6 +1,14 @@
 /*
-JetpackJoyride.java
-Ingrid and Isabel Crant
+ * JetpackJoyride.java
+ * Ingrid and Isabel Crant
+ * A clone of the mobile game "Jetpack Joyride"
+ * Features include:
+ * - Zappers
+ * - Lasers
+ * - Coins
+ * - Shields
+ * - Scientists
+ * - Missiles
 */
 
 import javax.swing.*;
@@ -83,7 +91,8 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	private static boolean newLongestRunPrompted;    // if the player is prompted for their name when they set a new longest run
 	private static String buyShieldsMessage;         // the message that appears when the player is trying to buy shields
 	private static int buyShieldMessageFrameCount;   // the number of frames the the buy shield message appears for
-	
+	private static final int shieldCost = 600;		 // the number of coins it costs to buy a shield
+
 	private static Rectangle buyShieldRect = new Rectangle(WIDTH/2 + 125, HEIGHT/2 - 130, 200, 100);  // "buy shield" button
 	private static Rectangle restartGameRect = new Rectangle(WIDTH/2 - 300, HEIGHT/2+50, 600, 180);   // "restart game" button
 
@@ -305,9 +314,9 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			FileWriter myWriter = new FileWriter(file);
 			myWriter.write(String.valueOf(currentCoins));
 			myWriter.close();
-		  } catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-		  }
+		}
 	}
 
 	// gets the distance of the longest run from the "LongestRun.txt" file:
@@ -356,7 +365,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			if(file.length() == 0) return 0;							// if the file hasn't been made yet, that means that no shields have been purchased yet
 			else {
 				Scanner myReader = new Scanner(file);
-				Integer num = Integer.parseInt(myReader.nextLine());	// the line is the form "name: score"
+				Integer num = Integer.parseInt(myReader.nextLine());
 				myReader.close();
 				return num;
 			}
@@ -439,12 +448,12 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	// adds lasers:
 	public void addLaser() {
-		boolean validLaserY = false;												// if the y-coordinate of the laser is valid
-		int[] randYList = {120, 320, 520};											// preset list of y-coordinates (such that Barry has enough room to fly between the lasers)
+		boolean validLaserY = false;												 // if the y-coordinate of the laser is valid
+		int[] randYList = {120, 320, 520};											 // preset list of y-coordinates (such that Barry has enough room to fly between the lasers)
 		int randY = 0;
-		while(!validLaserY) {														// while the y-coordinate is invalid
+		while(!validLaserY) {													 	 // while the y-coordinate is invalid
 			validLaserY = true;
-			randY = randYList[rand.nextInt(3)];										// chooses a random y-coordinate from the preset list
+			randY = randYList[rand.nextInt(3)];										 // chooses a random y-coordinate from the preset list
 			for(Laser[] laserPair : lasers) {
 				if(laserPair[0].getY() == randY && laserPair[1].getY() == randY) {
 					validLaserY = false;
@@ -590,14 +599,15 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 
 	// lets the player buy shields:
 	public void buyShield() {
-		if(currentCoins >= 600) {																								// if the player has enough coins to buy a shield, the player is allowed to buy a shield
-			currentCoins -= 600;
+		if(currentCoins >= shieldCost) {																								// if the player has enough coins to buy a shield, the player is allowed to buy a shield
+			currentCoins -= shieldCost;
 			numOfShields++;
 			buyShieldsMessage = "You bought a shield! You now have "+numOfShields+" shields and "+currentCoins+" coins left.";
 			setNumOfShields();
+			setCoins();
 		}
-		else {																													// the player is not allowed to buy a shield
-			buyShieldsMessage = "Sorry, you don't have enough coins to buy a shield. Shields cost 600 coins!";
+		else {																															// the player is not allowed to buy a shield
+			buyShieldsMessage = "Sorry, you don't have enough coins to buy a shield. Shields cost "+shieldCost+" coins!";
 		}
 	}
 
@@ -735,16 +745,15 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 					barry.gotHit();        // barry got hit
 				}
 			}
-	
 			for(Laser[] laserPair : lasers) {
 				if(laserPair[0].isFiring() && laserPair[1].isFiring()) {
-					if(barry.intersects(laserBeamRects.get(lasers.indexOf(laserPair))) || barry.intersects(laserPair[0]) || barry.intersects(laserPair[1])) {   // if barry hits a laser
-						if(!barry.hasShield()) {                                                                                // if barry doesn't have a shield
-							isGameOver = true;                                                                                  // the game is over
+					if(barry.intersects(laserBeamRects.get(lasers.indexOf(laserPair))) || barry.intersects(laserPair[0]) || barry.intersects(laserPair[1])) {   // if barry hits one of the lasers in the pair of lasers or the laser beam between the lasers
+						if(!barry.hasShield()) {                                                                                								// if barry doesn't have a shield
+							isGameOver = true;                                                                                  								// the game is over
 							SoundPlayer.playSoundEffect(SoundPlayer.barryHurt, 0);
 						}
 						barryCollided = true;
-						barry.gotHit();                                                                                         // barry got hit
+						barry.gotHit();                                                                                         								// barry got hit
 					}
 				}
 			}
@@ -775,17 +784,17 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			missileProbability += 0.001;
 		}
 
-		// for every stretch of 100 metres, a new obstacle appears
+		// for every stretch of 80 metres, a new obstacle appears
 		if(currentRun % 80 == 0 && currentRun != 0) {
 			double randSelection = new Random().nextDouble();
 
 			if(randSelection < 0.4) {                                // coins have a 40% chance of appearing
 				addCoins();
 			}
-			else if(randSelection >= 0.4 && randSelection < 0.8) {   // zappers have a 40% chance of appearing
+			else if(randSelection >= 0.4 && randSelection < 0.75) {   // zappers have a 35% chance of appearing
 				addZappers();
 			}
-			else {                                                    // lasers have a 20% chance of appearing
+			else {                                                    // lasers have a 35% chance of appearing
 				int randLaserAmount = rand.nextInt(2)+1;
 				for(int i = 0; i < randLaserAmount; i++) {
 					addLaser();
@@ -820,22 +829,22 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 			}
 
 			for(Laser[] laserPair : lasers) {
-				laserPair[0].draw(g);
-				laserPair[1].draw(g);
+				laserPair[0].draw(g);																		// draw the first laser in the pair
+				laserPair[1].draw(g);																		// draw the second laser in the pair
 
-				if(laserPair[0].isAtPosition() && laserPair[1].isAtPosition()) {
-					Line2D.Double warningBeam = new Line2D.Double(laserPair[0].getLoadingLineEndPoint(), laserPair[1].getLoadingLineEndPoint());
+				if(laserPair[0].isWarning() && laserPair[1].isWarning()) {																						// if the lasers are in the warning positon
+					Line2D.Double warningBeam = new Line2D.Double(laserPair[0].getLoadingLineEndPoint(), laserPair[1].getLoadingLineEndPoint());				// get the middle of the right edge of the right-facing laser and the middle of the left edge of the left-facing laser to calculate the length of the warning beam
 					
 					Graphics2D g2d = (Graphics2D) g;
 					g2d.setColor(Color.RED);
-					g2d.draw(warningBeam);
+					g2d.draw(warningBeam);																														// draws the warning beam in red
 				}
 				else if(laserPair[0].isFiring() && laserPair[1].isFiring()) {
-					Point2D firingEndPoint1 = laserPair[0].getFiringEndPoint();
+					Point2D firingEndPoint1 = laserPair[0].getFiringEndPoint();																														// gets the firing endpoints of both lasers
 					Point2D firingEndPoint2 = laserPair[1].getFiringEndPoint();
 
-					laserBeamImage = laserBeamImage.getScaledInstance((int) Math.abs(firingEndPoint1.getX() - firingEndPoint2.getX())+3, laserBeamImage.getHeight(null), Image.SCALE_DEFAULT);		// the +3 is there to fill in some pixels since the scaling isn't perfect
-					g.drawImage(laserBeamImage, (int) Math.min(firingEndPoint1.getX(), firingEndPoint2.getX()), (int) firingEndPoint1.getY(), null);
+					laserBeamImage = laserBeamImage.getScaledInstance((int) Math.abs(firingEndPoint1.getX() - firingEndPoint2.getX())+3, laserBeamImage.getHeight(null), Image.SCALE_DEFAULT);		// use the distance between the firing endpoints to calculate and scale the width of the laser beam (+3 is to fill in pixels since scaling isn't perfect)
+					g.drawImage(laserBeamImage, (int) Math.min(firingEndPoint1.getX(), firingEndPoint2.getX()), (int) firingEndPoint1.getY(), null);												// draw the laser beam image
 				}
 			}
 
@@ -874,7 +883,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 				Color gold = new Color(255, 255, 26);
 				g.setColor(gold);
 				g.setFont(myFont.deriveFont(Font.BOLD, 20f));
-				g.drawString("600 COINS", WIDTH/2 + 180, HEIGHT/2 - 50);
+				g.drawString(shieldCost+" COINS", WIDTH/2 + 180, HEIGHT/2 - 50);
 				g.setColor(Color.WHITE);
 				g.setFont(myFont.deriveFont(Font.BOLD, 30f));
 				g.drawString("BUY SHIELDS", WIDTH/2 + 145, HEIGHT/2 - 80);
@@ -894,9 +903,13 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 						buyShieldsMessage = "";
 					}
 				}
-				
 				g.setFont(myFont.deriveFont(Font.BOLD, 25f));
-				g.drawString(buyShieldsMessage, 150, HEIGHT/2 + 30);   // draws the buy shield message
+				if(buyShieldsMessage.contains("Sorry")) {
+					g.drawString(buyShieldsMessage, 50, HEIGHT/2 + 30);   // draws the buy shield message
+				}
+				else if(buyShieldsMessage.contains("You bought")) {
+					g.drawString(buyShieldsMessage, 100, HEIGHT/2 + 30);   // draws the buy shield message
+				}
 			}
 		}
 	}
@@ -925,7 +938,7 @@ class JetpackJoyridePanel extends JPanel implements MouseListener, ActionListene
 	
 	public void	keyPressed(KeyEvent e) {
 		if (screen.equals("start") && e.getKeyCode() == KeyEvent.VK_SPACE) {                                            // player presses space on starting screen to play
-			SoundPlayer.playSoundEffect(SoundPlayer.background, Clip.LOOP_CONTINUOUSLY);
+			SoundPlayer.playSoundEffect(SoundPlayer.background, Clip.LOOP_CONTINUOUSLY);								// plays the background music forever
             screen = "game";
         }
 		if (screen.equals("game") && e.getKeyCode() == KeyEvent.VK_ENTER && numOfShields > 0 && !barry.hasShield()) {   // player presses enter within the game to activate their shield (if they have any)

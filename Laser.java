@@ -1,12 +1,12 @@
+/*
+ * Laser.java
+ * Ingrid and Isabel Crant
+ * An obstacle used within the Jetpack Joyride game. A pair of lasers form a laser beam that kills Barry and causes scientists to faint if they touch it.
+*/
+
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.*;
-
-/*
-Laser.java
-Ingrid Crant
-A laser class used within the Jetpack Joyride game. A pair of lasers form a laser beam that kills Barry and causes scientists to faint.
-*/
 
 public class Laser extends Rectangle {                                                                      // laser uses Rectangle class to detect collisions with Barry and scientists
     private static final BufferedImage laser = JetpackJoyridePanel.loadBuffImg("laser.png");                // normal laser picture
@@ -28,18 +28,14 @@ public class Laser extends Rectangle {                                          
     private Point2D.Double loadingLineEndPoint;                                                             // stores one endpoint of the line appearing during warning state of the laser, shows user where the laser beam is located prior to laser firing
 
     private Point center;                                                                                   // center position of the laser
-    private static final int WIDTH = laser.getWidth(null), HEIGHT = laser.getHeight(null);                  // width and height of the laser
+    private static final int WIDTH = laser.getWidth(null), HEIGHT = laser.getHeight(null);
     private int dir;                                                                                        // direction of laser during moving state
 
     public Laser(int ddir, int yy) {
         super();
         dir = ddir;
 
-        moving = true;                                                                                      // the laser is moving
-        warning = false;                                                                                    // the laser is not at position yet
-        firing = false;                                                                                     // the laser is not firing yet
-        cooling = false;                                                                                    // the laser is not firing yet
-        off = false;                                                                                        // the laser is not off yet
+        moving = true; warning = false; firing = false; cooling = false; off = false;                       // the laser is moving                                                                                    
 
         center = new Point();
 
@@ -50,7 +46,7 @@ public class Laser extends Rectangle {                                          
         }
         center.y = yy + HEIGHT/2;                                                                           // add half the height of the laser to the top left corner's y-coord to get y-coord of center
 
-        frameNum = 0;                                                                                       // frameNum starts at 0
+        frameNum = 0;
         ellipseRadiusX = 100;                                                                               // ellipse x and y radii start at 100 and 80 respectively
         ellipseRadiusY = 80;
 
@@ -78,7 +74,7 @@ public class Laser extends Rectangle {                                          
     public Point2D getLoadingLineEndPoint() {
         return loadingLineEndPoint;
     }
-    public boolean isAtPosition() {
+    public boolean isWarning() {
         return warning;
     }
     public boolean isFiring() {
@@ -90,31 +86,27 @@ public class Laser extends Rectangle {                                          
     
     public void move() {                                                                                    // moves laser and laser properties based on the current state of the laser
         if(moving && frameNum == FRAMESBEFOREPOSITION) {                                                    // if laser is moving and the frame count has reached the maximum number of frames before warning
-            moving = false;
-            warning = true;
-            frameNum = 0;                                                                                   // reset frame number
+            moving = false; warning = true; 
+            frameNum = 0;
             if(dir == RIGHT) {
                 SoundPlayer.playSoundEffect(SoundPlayer.laserLoading, 0);                                   // plays laser loading sound effect only if direction is right to keep from playing twice in one laser pair
             }
         }
         else if(warning) {
             if(loadingEllipse.getWidth() <= getWidth() || loadingEllipse.getHeight() <= getHeight()) {      // if loading ellipse closed down on the laser
-                warning = false;
-                firing = true;                                                                              // laser fires
-                frameNum = 0;                                                                               // reset frame number
+                warning = false; firing = true;                                                             // laser fires
+                frameNum = 0;
                 SoundPlayer.playSoundEffect(SoundPlayer.laserFiring, 3);                                    // play laser beam buzzing sound, looping 3 times
             }
         }
         else if(firing && frameNum == FRAMESBEFORECOOLDOWN) {                                               // if laser is firing and the frame count has reached the maximum number of frames before cooling
-            firing = false;
-            cooling = true;
-            frameNum = 0;                                                                                   // reset frame number
-            JetpackJoyridePanel.resetlaserBeamRects();                                                       // reset laser beam rectangle so no collisions happen when the laser isn't firing
+            firing = false; cooling = true;
+            frameNum = 0;
+            JetpackJoyridePanel.resetlaserBeamRects();                                                      // reset laser beam rectangle so no collisions happen when the laser isn't firing
         }
         else if(cooling && frameNum == FRAMESBEFOREOFF) {
-            cooling = false;
-            off = true;
-            frameNum = 0;                                                                                   // reset frame number
+            cooling = false; off = true;
+            frameNum = 0;
         }
 
         if(moving) {
@@ -140,7 +132,7 @@ public class Laser extends Rectangle {                                          
             ellipseRadiusY -= LOADINGELLIPSESPEED;
         }
         else if(firing) {
-            // update the bounds of the laser rectangle to fit the firingLaser image
+            // centers the firingLaser image based on the normal laser image
             if(dir == RIGHT) {
                 setBounds(center.x - WIDTH/2 , center.y - firingLaser.getHeight()/2, firingLaser.getWidth(), firingLaser.getHeight());
             }
@@ -150,11 +142,11 @@ public class Laser extends Rectangle {                                          
         }
         else if(cooling) {
             if(dir == RIGHT) {
-                center.translate(-LASERSPEED, 0);                                                                                           // if laser is cooling and the laser's direction is right, it moves left to get off the screen
+                center.translate(-LASERSPEED, 0);                                                                                         // if laser is cooling and the laser's direction is right, it moves left to get off the screen
             } else {
-                center.translate(LASERSPEED, 0);                                                                                            // if laser is cooling and the laser's direction is left, it moves right to get off the screen
+                center.translate(LASERSPEED, 0);                                                                                          // if laser is cooling and the laser's direction is left, it moves right to get off the screen
             }
-            setBounds(center.x - laser.getWidth(null)/2, center.y - laser.getHeight(null)/2, WIDTH, height);                                // updates location and resets size to the normal lazer's size
+            setBounds(center.x - laser.getWidth(null)/2, center.y - laser.getHeight(null)/2, WIDTH, height);                              // updates location and resets size to the normal lazer's size
         }
         frameNum++;                                                                                                                       // increase frame count by one
     }
@@ -180,7 +172,7 @@ public class Laser extends Rectangle {                                          
 
         }
         else if(firing) {
-            // draws the firing lasers so that the center of the laser is centered with the laser within the laser firing images
+            // draws the firing lasers centered based on the normal laser image
             if(dir == RIGHT) {
                 g.drawImage(firingLaser, center.x - WIDTH/2 , center.y - firingLaser.getHeight()/2, null);
             }

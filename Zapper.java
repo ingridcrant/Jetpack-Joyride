@@ -1,3 +1,9 @@
+/*
+ * Zapper.java
+ * Ingrid and Isabel Crant
+ * An obstacle within the Jetpack Joyride game. Barry dies and scientists faint when they collide with a zapper.
+*/
+
 import java.awt.*;
 import java.awt.image.*;
 
@@ -9,7 +15,7 @@ public class Zapper extends Rectangle {
 
     private BufferedImage Zapper;
 
-    private String type;  // type of zapper: horizontal, vertical, etc.
+    private String type;                                        // type of zapper: horizontal, vertical, etc.
 
     public Zapper(String type, int X, int Y) {
         this.type = type;
@@ -39,7 +45,7 @@ public class Zapper extends Rectangle {
     }
 
     public void move() {
-        translate(JetpackJoyridePanel.speedX, 0);   // zapper moves with the background (looks like it's stationary)
+        translate(JetpackJoyridePanel.speedX, 0);               // zapper moves with the background (looks like it's stationary)
     }
 
     public void draw(Graphics g) {
